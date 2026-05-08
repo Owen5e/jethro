@@ -1,0 +1,52 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="portraitBg" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" style="stop-color:#f8f9fa;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#e94560;stop-opacity:0.3" />
+    </radialGradient>
+    <linearGradient id="warmGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#d4a574;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#e94560;stop-opacity:0.8" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1024" height="1024" fill="url(#portraitBg)"/>
+  
+  <!-- Warm glow -->
+  <circle cx="512" cy="400" r="300" fill="url(#warmGlow)" opacity="0.2"/>
+  
+  <!-- Head circle -->
+  <circle cx="512" cy="350" r="120" fill="#d4a574" opacity="0.8"/>
+  
+  <!-- Face details - simplified -->
+  <circle cx="485" cy="330" r="20" fill="#1a1a2e" opacity="0.6"/>
+  <circle cx="539" cy="330" r="20" fill="#1a1a2e" opacity="0.6"/>
+  <path d="M 512 360 Q 500 370 512 375 Q 524 370 512 360" fill="#1a1a2e" opacity="0.5"/>
+  
+  <!-- Shoulders and body -->
+  <ellipse cx="512" cy="520" rx="150" ry="180" fill="#16213e" opacity="0.7"/>
+  
+  <!-- Warm clothing -->
+  <rect x="350" y="480" width="324" height="200" rx="30" fill="#d4a574" opacity="0.6"/>
+  
+  <!-- Welcoming hand gesture -->
+  <circle cx="280" cy="500" r="50" fill="#d4a574" opacity="0.7"/>
+  <line x1="250" y1="480" x2="200" y2="420" stroke="#d4a574" stroke-width="30" stroke-linecap="round" opacity="0.6"/>
+  
+  <!-- Cross necklace -->
+  <circle cx="512" cy="480" r="20" fill="#e94560" opacity="0.8"/>
+  <line x1="512" y1="465" x2="512" y2="495" stroke="#e94560" stroke-width="4" opacity="0.8"/>
+  <line x1="495" y1="480" x2="529" y2="480" stroke="#e94560" stroke-width="4" opacity="0.8"/>
+  
+  <!-- Warm background light -->
+  <rect x="0" y="0" width="1024" height="200" fill="#e94560" opacity="0.1"/>
+  
+  <!-- Text -->
+  <text x="512" y="750" font-family="Playfair Display, serif" font-size="48" font-weight="bold" fill="#1a1a2e" text-anchor="middle" opacity="0.9">
+    Welcome
+  </text>
+  <text x="512" y="820" font-family="Inter, sans-serif" font-size="28" fill="#e94560" text-anchor="middle" opacity="0.8">
+    From Our Pastor
+  </text>
+</svg>

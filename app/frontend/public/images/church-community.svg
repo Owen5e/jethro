@@ -1,0 +1,62 @@
+<svg width="1024" height="576" viewBox="0 0 1024 576" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="communityBg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f3460;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#16213e;stop-opacity:1" />
+    </linearGradient>
+    <radialGradient id="warmSpotlight" cx="50%" cy="30%" r="50%">
+      <stop offset="0%" style="stop-color:#d4a574;stop-opacity:0.6" />
+      <stop offset="100%" style="stop-color:#0f3460;stop-opacity:0" />
+    </radialGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1024" height="576" fill="url(#communityBg)"/>
+  
+  <!-- Warm spotlight -->
+  <ellipse cx="512" cy="200" rx="600" ry="400" fill="url(#warmSpotlight)"/>
+  
+  <!-- Group formation circles representing diverse people -->
+  <!-- Person 1 - Left -->
+  <circle cx="250" cy="200" r="60" fill="#d4a574" opacity="0.8"/>
+  <circle cx="250" cy="120" r="40" fill="#e8b899" opacity="0.8"/>
+  <line x1="250" y1="160" x2="200" y2="240" stroke="#d4a574" stroke-width="20" stroke-linecap="round" opacity="0.7"/>
+  <line x1="250" y1="160" x2="300" y2="240" stroke="#d4a574" stroke-width="20" stroke-linecap="round" opacity="0.7"/>
+  
+  <!-- Person 2 - Center -->
+  <circle cx="512" cy="180" r="65" fill="#c9956f" opacity="0.8"/>
+  <circle cx="512" cy="90" r="45" fill="#daa889" opacity="0.8"/>
+  <line x1="512" y1="145" x2="460" y2="240" stroke="#c9956f" stroke-width="25" stroke-linecap="round" opacity="0.7"/>
+  <line x1="512" y1="145" x2="564" y2="240" stroke="#c9956f" stroke-width="25" stroke-linecap="round" opacity="0.7"/>
+  
+  <!-- Person 3 - Right -->
+  <circle cx="774" cy="210" r="58" fill="#b8966a" opacity="0.8"/>
+  <circle cx="774" cy="130" r="38" fill="#d4a574" opacity="0.8"/>
+  <line x1="774" y1="168" x2="724" y2="245" stroke="#b8966a" stroke-width="20" stroke-linecap="round" opacity="0.7"/>
+  <line x1="774" y1="168" x2="824" y2="245" stroke="#b8966a" stroke-width="20" stroke-linecap="round" opacity="0.7"/>
+  
+  <!-- Person 4 - Front left -->
+  <circle cx="350" cy="340" r="55" fill="#e94560" opacity="0.7"/>
+  <circle cx="350" cy="265" r="38" fill="#ff6b7f" opacity="0.7"/>
+  
+  <!-- Person 5 - Front right -->
+  <circle cx="674" cy="340" r="55" fill="#d4a574" opacity="0.7"/>
+  <circle cx="674" cy="265" r="38" fill="#e8b899" opacity="0.7"/>
+  
+  <!-- Hands connecting/fellowship -->
+  <circle cx="280" cy="280" r="15" fill="#e94560" opacity="0.8"/>
+  <circle cx="420" cy="300" r="15" fill="#e94560" opacity="0.8"/>
+  <line x1="280" y1="280" x2="420" y2="300" stroke="#e94560" stroke-width="8" opacity="0.6"/>
+  
+  <!-- Hearts symbolizing love -->
+  <path d="M 512 350 Q 500 360 512 375 Q 524 360 512 350" fill="#e94560" opacity="0.6"/>
+  <path d="M 600 320 Q 590 328 600 340 Q 610 328 600 320" fill="#e94560" opacity="0.5"/>
+  
+  <!-- Text -->
+  <text x="512" y="500" font-family="Playfair Display, serif" font-size="48" font-weight="bold" fill="#ffffff" text-anchor="middle" opacity="0.9">
+    Our Community
+  </text>
+  <text x="512" y="550" font-family="Inter, sans-serif" font-size="24" fill="#d4a574" text-anchor="middle" opacity="0.8">
+    Fellowship & Service
+  </text>
+</svg>

@@ -1,0 +1,66 @@
+<svg width="1024" height="576" viewBox="0 0 1024 576" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="skyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#16213e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#d4a574;stop-opacity:0.3" />
+    </linearGradient>
+    <linearGradient id="buildingGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#f8f9fa;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#d4a574;stop-opacity:0.4" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Sky -->
+  <rect width="1024" height="576" fill="url(#skyGradient)"/>
+  
+  <!-- Sun/warm light -->
+  <circle cx="900" cy="100" r="80" fill="#d4a574" opacity="0.6"/>
+  <circle cx="900" cy="100" r="60" fill="#e94560" opacity="0.4"/>
+  
+  <!-- Landscaping - grass -->
+  <ellipse cx="512" cy="500" rx="600" ry="150" fill="#16213e" opacity="0.3"/>
+  <path d="M 0 450 Q 256 420 512 430 Q 768 420 1024 450 L 1024 576 L 0 576 Z" fill="#16213e" opacity="0.4"/>
+  
+  <!-- Landscaping trees left -->
+  <ellipse cx="150" cy="420" rx="80" ry="120" fill="#16213e" opacity="0.5"/>
+  <rect x="140" y="420" width="20" height="100" fill="#1a1a2e" opacity="0.6"/>
+  
+  <!-- Landscaping trees right -->
+  <ellipse cx="874" cy="420" rx="80" ry="120" fill="#16213e" opacity="0.5"/>
+  <rect x="864" y="420" width="20" height="100" fill="#1a1a2e" opacity="0.6"/>
+  
+  <!-- Main building - Church -->
+  <path d="M 250 250 L 250 450 L 774 450 L 774 250 Z" fill="url(#buildingGradient)" opacity="0.9"/>
+  
+  <!-- Steeple -->
+  <path d="M 400 250 L 512 100 L 624 250 Z" fill="#d4a574" opacity="0.8"/>
+  <rect x="508" y="80" width="8" height="170" fill="#e94560" opacity="0.7"/>
+  
+  <!-- Cross on top -->
+  <line x1="512" y1="80" x2="512" y2="50" stroke="#ffffff" stroke-width="4" opacity="0.9"/>
+  <line x1="495" y1="65" x2="529" y2="65" stroke="#ffffff" stroke-width="4" opacity="0.9"/>
+  
+  <!-- Large entrance doors -->
+  <rect x="450" y="350" width="60" height="100" fill="#1a1a2e" opacity="0.8" rx="5"/>
+  <circle cx="480" cy="400" r="4" fill="#d4a574" opacity="0.7"/>
+  
+  <!-- Windows row 1 -->
+  <rect x="300" y="280" width="40" height="40" fill="#16213e" opacity="0.6" rx="3"/>
+  <rect x="380" y="280" width="40" height="40" fill="#16213e" opacity="0.6" rx="3"/>
+  <rect x="604" y="280" width="40" height="40" fill="#16213e" opacity="0.6" rx="3"/>
+  <rect x="684" y="280" width="40" height="40" fill="#16213e" opacity="0.6" rx="3"/>
+  
+  <!-- Windows row 2 -->
+  <rect x="300" y="360" width="40" height="40" fill="#16213e" opacity="0.6" rx="3"/>
+  <rect x="380" y="360" width="40" height="40" fill="#16213e" opacity="0.6" rx="3"/>
+  <rect x="604" y="360" width="40" height="40" fill="#16213e" opacity="0.6" rx="3"/>
+  <rect x="684" y="360" width="40" height="40" fill="#16213e" opacity="0.6" rx="3"/>
+  
+  <!-- Pathway -->
+  <path d="M 512 450 Q 480 480 512 576 Q 544 480 512 450" fill="#d4a574" opacity="0.4"/>
+  
+  <!-- Text -->
+  <text x="512" y="530" font-family="Playfair Display, serif" font-size="36" font-weight="bold" fill="#ffffff" text-anchor="middle" opacity="0.8">
+    Grace Church
+  </text>
+</svg>
