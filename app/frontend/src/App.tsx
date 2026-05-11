@@ -4,6 +4,8 @@ import './App.css';
 // Pages
 import About from './pages/About';
 import AdminDashboard from './pages/AdminDashboard';
+import Blog from './pages/Blog';
+import Books from './pages/Books';
 import Contact from './pages/Contact';
 import Events from './pages/Events';
 import Giving from './pages/Giving';
@@ -27,6 +29,8 @@ function App() {
             <Route path="/ministries" element={<Ministries />} />
             <Route path="/sermons" element={<Sermons />} />
             <Route path="/events" element={<Events />} />
+            <Route path="/books" element={<Books />} />
+            <Route path="/blog" element={<Blog />} />
             <Route path="/giving" element={<Giving />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/admin" element={<AdminDashboard />} />

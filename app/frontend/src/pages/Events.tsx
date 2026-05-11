@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Calendar, Clock, MapPin } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { eventsApi } from '../lib/api';
 
 interface TimeRemaining {
   days: number;
@@ -40,7 +41,24 @@ function useCountdown(targetDate: string): TimeRemaining {
 }
 
 export default function Events() {
-  const [selectedEvent, setSelectedEvent] = useState<number | null>(null);
+  const [events, setEvents] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedEvent, setSelectedEvent] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const data = await eventsApi.getAll();
+        setEvents(data || []);
+      } catch (err) {
+        console.error('Failed to fetch events:', err);
+        setEvents([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchEvents();
+  }, []);
 
   const fadeInUp = {
     hidden: { opacity: 0, y: 20 },
@@ -57,50 +75,6 @@ export default function Events() {
       },
     },
   };
-
-  const events = [
-    {
-      id: 1,
-      title: 'Sunday Worship Service',
-      date: '2026-06-12',
-      time: '10:00 AM',
-      location: 'Main Sanctuary',
-      description:
-        'Join us for our weekly worship service with music, teaching, and fellowship.',
-      image: 'bg-[#0f3460]',
-      dateTime: '2026-06-12T10:00:00',
-    },
-    {
-      id: 2,
-      title: 'Prayer Meeting',
-      date: '2026-06-15',
-      time: '7:00 PM',
-      location: 'Prayer Room',
-      description: 'Join our community in intercessory prayer and worship.',
-      image: 'bg-[#16213e]',
-      dateTime: '2026-06-15T19:00:00',
-    },
-    {
-      id: 3,
-      title: 'Community Outreach',
-      date: '2026-06-18',
-      time: '9:00 AM',
-      location: 'City Park',
-      description: 'Serve our community with food, fellowship, and care.',
-      image: 'bg-[#e94560]',
-      dateTime: '2026-06-18T09:00:00',
-    },
-    {
-      id: 4,
-      title: 'Youth Group Meeting',
-      date: '2026-06-20',
-      time: '6:30 PM',
-      location: 'Youth Center',
-      description: 'Games, teaching, and fellowship for young believers.',
-      image: 'bg-[#d4a574]',
-      dateTime: '2026-06-20T18:30:00',
-    },
-  ];
 
   return (
     <div className="w-full">
@@ -122,26 +96,34 @@ export default function Events() {
       <motion.section
         variants={container}
         initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
+        animate="visible"
         className="py-16 md:py-24 bg-white"
       >
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {events.map((event) => {
-              const timeRemaining = useCountdown(event.dateTime);
-              return (
+          {loading ? (
+            <div className="text-center text-gray-500 py-12">
+              Loading events...
+            </div>
+          ) : events.length === 0 ? (
+            <div className="text-center text-gray-500 py-12">
+              <Calendar size={48} className="mx-auto mb-4 text-gray-300" />
+              <p className="text-lg">
+                No upcoming events at this time. Check back soon!
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {events.map((event: any) => (
                 <EventCard
                   key={event.id}
                   event={event}
                   selectedEvent={selectedEvent}
                   setSelectedEvent={setSelectedEvent}
-                  timeRemaining={timeRemaining}
                   fadeInUp={fadeInUp}
                 />
-              );
-            })}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </motion.section>
     </div>
@@ -150,9 +132,8 @@ export default function Events() {
 
 interface EventCardProps {
   event: any;
-  selectedEvent: number | null;
-  setSelectedEvent: (id: number | null) => void;
-  timeRemaining: TimeRemaining;
+  selectedEvent: string | null;
+  setSelectedEvent: (id: string | null) => void;
   fadeInUp: any;
 }
 
@@ -160,9 +141,11 @@ function EventCard({
   event,
   selectedEvent,
   setSelectedEvent,
-  timeRemaining,
   fadeInUp,
 }: EventCardProps) {
+  const dateTime = `${event.date}T${event.time || '00:00'}`;
+  const timeRemaining = useCountdown(dateTime);
+
   return (
     <motion.div
       variants={fadeInUp}
@@ -171,55 +154,63 @@ function EventCard({
       }
       className="bg-white rounded-lg overflow-hidden shadow hover:shadow-lg transition cursor-pointer"
     >
-      <div className={`${event.image} h-40`}></div>
-      <div className="p-6">
-        <h3 className="text-2xl font-bold text-[#1a1a2e] mb-4">
-          {event.title}
-        </h3>
-        <div className="space-y-2 text-gray-600 mb-4">
+      {event.image_url ? (
+        <img
+          src={event.image_url}
+          alt={event.title}
+          className="w-full h-48 object-fill"
+        />
+      ) : (
+        <div className="bg-[#0f3460] h-48"></div>
+      )}
+      <div className="p-4">
+        <h3 className="text-lg font-bold text-[#1a1a2e] mb-2">{event.title}</h3>
+        <div className="space-y-1 text-gray-600 mb-3">
           <div className="flex items-center gap-2">
-            <Calendar size={18} className="text-[#e94560]" />
-            <span>{new Date(event.date).toLocaleDateString()}</span>
+            <Calendar size={14} className="text-[#e94560]" />
+            <span className="text-sm">
+              {new Date(event.date).toLocaleDateString()}
+            </span>
           </div>
           <div className="flex items-center gap-2">
-            <Clock size={18} className="text-[#e94560]" />
-            <span>{event.time}</span>
+            <Clock size={14} className="text-[#e94560]" />
+            <span className="text-sm">{event.time}</span>
           </div>
           <div className="flex items-center gap-2">
-            <MapPin size={18} className="text-[#e94560]" />
-            <span>{event.location}</span>
+            <MapPin size={14} className="text-[#e94560]" />
+            <span className="text-sm">{event.location}</span>
           </div>
         </div>
 
         {/* Countdown Timer */}
-        <div className="bg-[#f8f9fa] p-4 rounded-lg mb-4">
-          <p className="text-sm font-semibold text-[#1a1a2e] mb-3">
+        <div className="bg-[#f8f9fa] p-3 rounded-lg ">
+          <p className="text-xs font-semibold text-[#1a1a2e] mb-2">
             Time until event:
           </p>
-          <div className="grid grid-cols-4 gap-2">
-            <div className="bg-white p-2 rounded text-center">
-              <div className="text-2xl font-bold text-[#e94560]">
+          <div className="grid grid-cols-4 gap-1.5">
+            <div className="bg-white p-0.5 rounded text-center">
+              <div className="text-lg font-bold text-[#e94560]">
                 {timeRemaining.days}
               </div>
-              <div className="text-xs text-gray-600">Days</div>
+              <div className="text-[10px] text-gray-600">Days</div>
             </div>
-            <div className="bg-white p-2 rounded text-center">
-              <div className="text-2xl font-bold text-[#e94560]">
+            <div className="bg-white p-1.5 rounded text-center">
+              <div className="text-lg font-bold text-[#e94560]">
                 {timeRemaining.hours}
               </div>
-              <div className="text-xs text-gray-600">Hours</div>
+              <div className="text-[10px] text-gray-600">Hours</div>
             </div>
-            <div className="bg-white p-2 rounded text-center">
-              <div className="text-2xl font-bold text-[#e94560]">
+            <div className="bg-white p-1.5 rounded text-center">
+              <div className="text-lg font-bold text-[#e94560]">
                 {timeRemaining.minutes}
               </div>
-              <div className="text-xs text-gray-600">Mins</div>
+              <div className="text-[10px] text-gray-600">Mins</div>
             </div>
-            <div className="bg-white p-2 rounded text-center">
-              <div className="text-2xl font-bold text-[#e94560]">
+            <div className="bg-white p-1.5 rounded text-center">
+              <div className="text-lg font-bold text-[#e94560]">
                 {timeRemaining.seconds}
               </div>
-              <div className="text-xs text-gray-600">Secs</div>
+              <div className="text-[10px] text-gray-600">Secs</div>
             </div>
           </div>
         </div>
@@ -228,10 +219,10 @@ function EventCard({
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="mt-4 pt-4 border-t"
+            className="mt-3 pt-3 border-t"
           >
-            <p className="text-gray-600">{event.description}</p>
-            <button className="mt-4 bg-[#e94560] hover:bg-[#d43d4f] text-white px-4 py-2 rounded-lg transition w-full">
+            <p className="text-sm text-gray-600">{event.description}</p>
+            <button className="mt-3 bg-[#e94560] hover:bg-[#d43d4f] text-white px-3 py-1.5 text-sm rounded-lg transition w-full">
               Register
             </button>
           </motion.div>

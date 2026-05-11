@@ -44,11 +44,14 @@ export default function Navbar() {
             <Link to="/events" className="hover:text-[#d4a574] transition">
               Events
             </Link>
+            <Link to="/books" className="hover:text-[#d4a574] transition">
+              Books
+            </Link>
+            <Link to="/blog" className="hover:text-[#d4a574] transition">
+              Blog
+            </Link>
             <Link to="/giving" className="hover:text-[#d4a574] transition">
               Giving
-            </Link>
-            <Link to="/contact" className="hover:text-[#d4a574] transition">
-              Contact
             </Link>
           </div>
 

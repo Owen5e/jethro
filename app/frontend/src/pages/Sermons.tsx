@@ -1,10 +1,31 @@
 import { motion } from 'framer-motion';
 import { Calendar, Search, User } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { sermonsApi } from '../lib/api';
 
 export default function Sermons() {
+  const [sermons, setSermons] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+
+  useEffect(() => {
+    const fetchSermons = async () => {
+      try {
+        const params: { search?: string; category?: string } = {};
+        if (searchTerm) params.search = searchTerm;
+        if (selectedCategory !== 'all') params.category = selectedCategory;
+        const data = await sermonsApi.getAll(params);
+        setSermons(data || []);
+      } catch (err) {
+        console.error('Failed to fetch sermons:', err);
+        setSermons([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSermons();
+  }, [searchTerm, selectedCategory]);
 
   const fadeInUp = {
     hidden: { opacity: 0, y: 20 },
@@ -21,48 +42,6 @@ export default function Sermons() {
       },
     },
   };
-
-  const sermons = [
-    {
-      id: 1,
-      title: 'Faith in the Storm',
-      speaker: 'Pastor John Smith',
-      date: '2024-05-05',
-      category: 'Faith',
-      description: "How to maintain faith when facing life's challenges.",
-    },
-    {
-      id: 2,
-      title: 'Love Never Fails',
-      speaker: 'Pastor Sarah Johnson',
-      date: '2024-04-28',
-      category: 'Love',
-      description: "Understanding the power of God's love in our lives.",
-    },
-    {
-      id: 3,
-      title: "God's Plan for Your Life",
-      speaker: 'Pastor John Smith',
-      date: '2024-04-21',
-      category: 'Purpose',
-      description: "Discovering God's purpose and calling for your journey.",
-    },
-    {
-      id: 4,
-      title: 'Freedom in Christ',
-      speaker: 'Pastor Sarah Johnson',
-      date: '2024-04-14',
-      category: 'Freedom',
-      description: 'Breaking free from the chains that hold us captive.',
-    },
-  ];
-
-  const filteredSermons = sermons.filter(
-    (sermon) =>
-      (selectedCategory === 'all' || sermon.category === selectedCategory) &&
-      (sermon.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        sermon.speaker.toLowerCase().includes(searchTerm.toLowerCase())),
-  );
 
   return (
     <div className="w-full">
@@ -111,7 +90,11 @@ export default function Sermons() {
               <option value="Faith">Faith</option>
               <option value="Love">Love</option>
               <option value="Purpose">Purpose</option>
-              <option value="Freedom">Freedom</option>
+              <option value="Purity">Purity</option>
+              <option value="Deliverance">Deliverance</option>
+              <option value="Prayer">Prayer</option>
+              <option value="Prosperity">Prosperity</option>
+              <option value="Worship">Worship</option>
             </select>
           </motion.div>
         </div>
@@ -121,47 +104,76 @@ export default function Sermons() {
       <motion.section
         variants={container}
         initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
+        animate="visible"
         className="py-16 md:py-24 bg-[#f8f9fa]"
       >
-        <div className="container mx-auto px-4">
-          <div className="space-y-6">
-            {filteredSermons.map((sermon) => (
-              <motion.div
-                key={sermon.id}
-                variants={fadeInUp}
-                className="bg-white p-6 rounded-lg shadow"
-              >
-                <div className="flex flex-col md:flex-row justify-between md:items-start gap-4">
-                  <div className="flex-1">
-                    <h3 className="text-2xl font-bold text-[#1a1a2e] mb-2">
-                      {sermon.title}
-                    </h3>
-                    <div className="flex gap-4 text-gray-600 flex-wrap">
-                      <div className="flex items-center gap-2">
-                        <User size={16} />
-                        <span>{sermon.speaker}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Calendar size={16} />
-                        <span>
-                          {new Date(sermon.date).toLocaleDateString()}
+        <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {loading ? (
+            <div className="text-center text-gray-500 py-12">
+              Loading sermons...
+            </div>
+          ) : sermons.length === 0 ? (
+            <div className="text-center text-gray-500 py-12">
+              <User size={48} className="mx-auto mb-4 text-gray-300" />
+              <p className="text-lg">No sermons found.</p>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {sermons.map((sermon: any) => (
+                <motion.div
+                  key={sermon.id}
+                  variants={fadeInUp}
+                  className="bg-white p-6 rounded-lg shadow"
+                >
+                  <div className="flex flex-col md:flex-row justify-between md:items-start gap-4">
+                    <div className="flex-1">
+                      <h3 className="text-2xl font-bold text-[#1a1a2e] mb-2">
+                        {sermon.title}
+                      </h3>
+                      <div className="flex gap-4 text-gray-600 flex-wrap">
+                        <div className="flex items-center gap-2">
+                          <User size={16} />
+                          <span>{sermon.author}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Calendar size={16} />
+                          <span>
+                            {new Date(sermon.date).toLocaleDateString()}
+                          </span>
+                        </div>
+                        <span className="bg-[#e94560] text-white px-3 py-1 rounded text-sm">
+                          {sermon.category}
                         </span>
                       </div>
-                      <span className="bg-[#e94560] text-white px-3 py-1 rounded text-sm">
-                        {sermon.category}
-                      </span>
+                      <p className="text-gray-600 mt-3">{sermon.description}</p>
                     </div>
-                    <p className="text-gray-600 mt-3">{sermon.description}</p>
+                    <div className="flex gap-2">
+                      {sermon.audio_url && (
+                        <a
+                          href={sermon.audio_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="bg-[#e94560] hover:bg-[#d43d4f] text-white px-6 py-2 rounded-lg transition whitespace-nowrap"
+                        >
+                          Listen
+                        </a>
+                      )}
+                      {sermon.video_url && (
+                        <a
+                          href={sermon.video_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="bg-[#0f3460] hover:bg-[#16213e] text-white px-6 py-2 rounded-lg transition whitespace-nowrap"
+                        >
+                          Watch
+                        </a>
+                      )}
+                    </div>
                   </div>
-                  <button className="bg-[#e94560] hover:bg-[#d43d4f] text-white px-6 py-2 rounded-lg transition whitespace-nowrap">
-                    Listen
-                  </button>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+                </motion.div>
+              ))}
+            </div>
+          )}
         </div>
       </motion.section>
     </div>

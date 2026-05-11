@@ -12,8 +12,9 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
     { label: 'Ministries', href: '/ministries' },
     { label: 'Sermons', href: '/sermons' },
     { label: 'Events', href: '/events' },
+    { label: 'Books', href: '/books' },
+    { label: 'Blog', href: '/blog' },
     { label: 'Giving', href: '/giving' },
-    { label: 'Contact', href: '/contact' },
   ];
 
   if (!isOpen) return null;

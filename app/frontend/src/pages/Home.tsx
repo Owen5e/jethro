@@ -2,14 +2,162 @@ import { motion } from 'framer-motion';
 import {
   ArrowRight,
   BookOpen,
+  Calendar,
   Church,
+  Clock,
   Globe,
   Heart,
+  MapPin,
   Users,
 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { eventsApi, sermonsApi } from '../lib/api';
+
+interface TimeRemaining {
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+}
+
+function useCountdown(targetDate: string): TimeRemaining {
+  const [timeRemaining, setTimeRemaining] = useState<TimeRemaining>({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const now = new Date().getTime();
+      const target = new Date(targetDate).getTime();
+      const gap = target - now;
+
+      if (gap > 0) {
+        setTimeRemaining({
+          days: Math.floor(gap / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((gap / (1000 * 60 * 60)) % 24),
+          minutes: Math.floor((gap / 1000 / 60) % 60),
+          seconds: Math.floor((gap / 1000) % 60),
+        });
+      }
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [targetDate]);
+
+  return timeRemaining;
+}
+
+interface EventCardProps {
+  event: any;
+  fadeInUp: {
+    hidden: { opacity: number; y: number };
+    visible: { opacity: number; y: number; transition: { duration: number } };
+  };
+}
+
+function EventCard({ event, fadeInUp }: EventCardProps) {
+  const dateTime = `${event.date}T${event.time || '00:00'}`;
+  const timeRemaining = useCountdown(dateTime);
+
+  return (
+    <motion.div
+      variants={fadeInUp}
+      className="bg-white rounded-lg overflow-hidden shadow hover:shadow-lg transition"
+    >
+      {event.image_url ? (
+        <img
+          src={event.image_url}
+          alt={event.title}
+          className="w-full h-60 object-fill"
+        />
+      ) : (
+        <div className="bg-[#0f3460] h-40"></div>
+      )}
+      <div className="p-6">
+        <h3 className="text-2xl font-bold text-[#1a1a2e] mb-4">
+          {event.title}
+        </h3>
+        <div className="space-y-2 text-gray-600 mb-4">
+          <div className="flex items-center gap-2">
+            <Calendar size={18} className="text-[#e94560]" />
+            <span>{new Date(event.date).toLocaleDateString()}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Clock size={18} className="text-[#e94560]" />
+            <span>{event.time}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <MapPin size={18} className="text-[#e94560]" />
+            <span>{event.location}</span>
+          </div>
+        </div>
+
+        {/* Countdown Timer */}
+        <div className="bg-[#f8f9fa] p-4 rounded-lg">
+          <p className="text-sm font-semibold text-[#1a1a2e] mb-3">
+            Time until event:
+          </p>
+          <div className="grid grid-cols-4 gap-2">
+            <div className="bg-white p-2 rounded text-center">
+              <div className="text-2xl font-bold text-[#e94560]">
+                {timeRemaining.days}
+              </div>
+              <div className="text-xs text-gray-600">Days</div>
+            </div>
+            <div className="bg-white p-2 rounded text-center">
+              <div className="text-2xl font-bold text-[#e94560]">
+                {timeRemaining.hours}
+              </div>
+              <div className="text-xs text-gray-600">Hours</div>
+            </div>
+            <div className="bg-white p-2 rounded text-center">
+              <div className="text-2xl font-bold text-[#e94560]">
+                {timeRemaining.minutes}
+              </div>
+              <div className="text-xs text-gray-600">Mins</div>
+            </div>
+            <div className="bg-white p-2 rounded text-center">
+              <div className="text-2xl font-bold text-[#e94560]">
+                {timeRemaining.seconds}
+              </div>
+              <div className="text-xs text-gray-600">Secs</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
 
 export default function Home() {
+  const [upcomingEvents, setUpcomingEvents] = useState<any[]>([]);
+  const [latestSermons, setLatestSermons] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [events, sermons] = await Promise.all([
+          eventsApi.getUpcoming(),
+          sermonsApi.getAll(),
+        ]);
+        setUpcomingEvents(events?.slice(0, 4) || []);
+        setLatestSermons(sermons?.slice(0, 2) || []);
+      } catch (err) {
+        console.error('Failed to fetch homepage data:', err);
+        setUpcomingEvents([]);
+        setLatestSermons([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
   const fadeInUp = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
@@ -366,34 +514,32 @@ export default function Home() {
           >
             Latest Sermons
           </motion.h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-            {[
-              {
-                title: 'Faith in the Storm',
-                speaker: 'Pastor John Smith',
-                description: "How to maintain faith during life's challenges",
-              },
-              {
-                title: 'Love Never Fails',
-                speaker: 'Pastor Sarah Johnson',
-                description:
-                  "Understanding the power of God's love in our lives",
-              },
-            ].map((sermon, idx) => (
-              <motion.div
-                key={idx}
-                variants={fadeInUp}
-                className="bg-white p-8 rounded-lg shadow hover:shadow-lg transition"
-              >
-                <h3 className="text-xl font-bold text-[#1a1a2e] mb-2">
-                  {sermon.title}
-                </h3>
-                <p className="text-[#e94560] font-semibold mb-3 text-sm">
-                  {sermon.speaker}
-                </p>
-                <p className="text-gray-600">{sermon.description}</p>
-              </motion.div>
-            ))}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+            {loading ? (
+              <div className="col-span-2 text-center text-gray-500 py-8">
+                Loading sermons...
+              </div>
+            ) : latestSermons.length === 0 ? (
+              <div className="col-span-2 text-center text-gray-500 py-8">
+                No sermons available yet.
+              </div>
+            ) : (
+              latestSermons.map((sermon: any) => (
+                <motion.div
+                  key={sermon.id}
+                  variants={fadeInUp}
+                  className="bg-white p-8 rounded-lg shadow hover:shadow-lg transition"
+                >
+                  <h3 className="text-xl font-bold text-[#1a1a2e] mb-2">
+                    {sermon.title}
+                  </h3>
+                  <p className="text-[#e94560] font-semibold mb-3 text-sm">
+                    {sermon.author}
+                  </p>
+                  <p className="text-gray-600">{sermon.description}</p>
+                </motion.div>
+              ))
+            )}
           </div>
           <motion.div variants={fadeInUp} className="text-center">
             <Link
@@ -421,6 +567,21 @@ export default function Home() {
           >
             Upcoming Events
           </motion.h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+            {loading ? (
+              <div className="col-span-2 text-center text-gray-500 py-8">
+                Loading events...
+              </div>
+            ) : upcomingEvents.length === 0 ? (
+              <div className="col-span-2 text-center text-gray-500 py-8">
+                No upcoming events at this time.
+              </div>
+            ) : (
+              upcomingEvents.map((event: any) => (
+                <EventCard key={event.id} event={event} fadeInUp={fadeInUp} />
+              ))
+            )}
+          </div>
           <motion.div variants={fadeInUp} className="text-center">
             <Link
               to="/events"
