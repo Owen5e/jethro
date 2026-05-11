@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
-import { Calendar, Search, User } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { Calendar, Headphones, Pause, Search, User, Video } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import { sermonsApi } from '../lib/api';
 
 export default function Sermons() {
@@ -8,6 +8,46 @@ export default function Sermons() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [playingId, setPlayingId] = useState<string | null>(null);
+  const audioRefs = useRef<{ [key: string]: HTMLAudioElement }>({});
+
+  const togglePlay = (sermonId: string, audioUrl: string) => {
+    // Pause any currently playing audio
+    if (playingId && playingId !== sermonId && audioRefs.current[playingId]) {
+      audioRefs.current[playingId].pause();
+      audioRefs.current[playingId].currentTime = 0;
+    }
+
+    if (playingId === sermonId) {
+      // Clicking the same sermon's play button again toggles
+      if (audioRefs.current[sermonId]) {
+        if (audioRefs.current[sermonId].paused) {
+          audioRefs.current[sermonId].play();
+        } else {
+          audioRefs.current[sermonId].pause();
+        }
+      }
+    } else {
+      setPlayingId(sermonId);
+      // Create audio element if it doesn't exist
+      if (!audioRefs.current[sermonId]) {
+        const audio = new Audio(audioUrl);
+        audio.addEventListener('ended', () => {
+          setPlayingId(null);
+        });
+        audioRefs.current[sermonId] = audio;
+      }
+      audioRefs.current[sermonId].play();
+    }
+  };
+
+  const stopPlaying = (sermonId: string) => {
+    if (audioRefs.current[sermonId]) {
+      audioRefs.current[sermonId].pause();
+      audioRefs.current[sermonId].currentTime = 0;
+    }
+    setPlayingId(null);
+  };
 
   useEffect(() => {
     const fetchSermons = async () => {
@@ -107,7 +147,7 @@ export default function Sermons() {
         animate="visible"
         className="py-16 md:py-24 bg-[#f8f9fa]"
       >
-        <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="container mx-auto px-4">
           {loading ? (
             <div className="text-center text-gray-500 py-12">
               Loading sermons...
@@ -118,57 +158,75 @@ export default function Sermons() {
               <p className="text-lg">No sermons found.</p>
             </div>
           ) : (
-            <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {sermons.map((sermon: any) => (
                 <motion.div
                   key={sermon.id}
                   variants={fadeInUp}
-                  className="bg-white p-6 rounded-lg shadow"
+                  className="bg-white p-6 rounded-lg shadow flex flex-col"
                 >
-                  <div className="flex flex-col md:flex-row justify-between md:items-start gap-4">
-                    <div className="flex-1">
-                      <h3 className="text-2xl font-bold text-[#1a1a2e] mb-2">
-                        {sermon.title}
-                      </h3>
-                      <div className="flex gap-4 text-gray-600 flex-wrap">
-                        <div className="flex items-center gap-2">
-                          <User size={16} />
-                          <span>{sermon.author}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Calendar size={16} />
-                          <span>
-                            {new Date(sermon.date).toLocaleDateString()}
-                          </span>
-                        </div>
-                        <span className="bg-[#e94560] text-white px-3 py-1 rounded text-sm">
-                          {sermon.category}
+                  <div className="flex-1">
+                    <h3 className="text-2xl font-bold text-[#1a1a2e] mb-2">
+                      {sermon.title}
+                    </h3>
+                    <div className="flex gap-4 text-gray-600 flex-wrap mb-3">
+                      <div className="flex items-center gap-2">
+                        <User size={16} />
+                        <span>{sermon.author}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Calendar size={16} />
+                        <span>
+                          {new Date(sermon.date).toLocaleDateString()}
                         </span>
                       </div>
-                      <p className="text-gray-600 mt-3">{sermon.description}</p>
+                      <span className="bg-[#e94560] text-white px-3 py-1 rounded text-sm">
+                        {sermon.category}
+                      </span>
                     </div>
-                    <div className="flex gap-2">
-                      {sermon.audio_url && (
-                        <a
-                          href={sermon.audio_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="bg-[#e94560] hover:bg-[#d43d4f] text-white px-6 py-2 rounded-lg transition whitespace-nowrap"
-                        >
+                    <p className="text-gray-600 mb-4">{sermon.description}</p>
+                  </div>
+                  <div className="flex gap-2 pt-4 border-t border-gray-100">
+                    <button
+                      onClick={() =>
+                        sermon.audio_url &&
+                        togglePlay(sermon.id, sermon.audio_url)
+                      }
+                      disabled={!sermon.audio_url}
+                      className={`flex items-center gap-2 px-6 py-2 rounded-lg transition whitespace-nowrap ${
+                        !sermon.audio_url
+                          ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                          : playingId === sermon.id
+                            ? 'bg-[#d43d4f] text-white'
+                            : 'bg-[#e94560] hover:bg-[#d43d4f] text-white'
+                      }`}
+                    >
+                      {playingId === sermon.id ? (
+                        <>
+                          <Pause size={16} />
+                          Pause
+                        </>
+                      ) : (
+                        <>
+                          <Headphones size={16} />
                           Listen
-                        </a>
+                        </>
                       )}
-                      {sermon.video_url && (
-                        <a
-                          href={sermon.video_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="bg-[#0f3460] hover:bg-[#16213e] text-white px-6 py-2 rounded-lg transition whitespace-nowrap"
-                        >
-                          Watch
-                        </a>
-                      )}
-                    </div>
+                    </button>
+                    <a
+                      href={sermon.video_url || '#'}
+                      target={sermon.video_url ? '_blank' : undefined}
+                      rel={sermon.video_url ? 'noopener noreferrer' : undefined}
+                      onClick={(e) => !sermon.video_url && e.preventDefault()}
+                      className={`flex items-center gap-2 px-6 py-2 rounded-lg transition whitespace-nowrap ${
+                        !sermon.video_url
+                          ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                          : 'bg-[#0f3460] hover:bg-[#16213e] text-white'
+                      }`}
+                    >
+                      <Video size={16} />
+                      Watch
+                    </a>
                   </div>
                 </motion.div>
               ))}

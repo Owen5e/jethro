@@ -1,5 +1,7 @@
 import { motion } from 'framer-motion';
 import { BookOpen, Heart, Target, Users } from 'lucide-react';
+import facecardone from '../assets/facecardone.png';
+import facecardtwo from '../assets/facecardtwo.jpeg';
 
 export default function About() {
   const fadeInUp = {
@@ -184,11 +186,13 @@ export default function About() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             {[
               {
+                image: facecardone,
                 name: 'Apostle Emmanuel David Craig',
                 role: 'Founder/General Overseer',
                 bio: 'With over 10 years of ministry experience, Apostle Craig leads our congregation with passion and wisdom.',
               },
               {
+                image: facecardtwo,
                 name: 'Pastor Sarah Craig',
                 role: 'Associate Pastor',
                 bio: 'Pastor Sarah oversees our community outreach and discipleship programs with dedication and grace.',
@@ -199,7 +203,13 @@ export default function About() {
                 variants={fadeInUp}
                 className="bg-white p-8 rounded-lg shadow"
               >
-                <div className="w-24 h-24 bg-[#e94560] rounded-full mx-auto mb-4"></div>
+                <div className="w-24 h-24 bg-[#e94560] rounded-full mx-auto mb-4">
+                  <img
+                    src={leader.image}
+                    alt=""
+                    className="w-full h-full object-cover rounded-full"
+                  />
+                </div>
                 <h3 className="text-2xl font-bold text-center mb-2 text-[#1a1a2e]">
                   {leader.name}
                 </h3>

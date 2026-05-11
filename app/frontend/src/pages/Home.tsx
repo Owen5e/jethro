@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import apostlesuit from '../assets/apostlesuit.png';
 import { eventsApi, sermonsApi } from '../lib/api';
 
 interface TimeRemaining {
@@ -240,7 +241,7 @@ export default function Home() {
               className="relative h-96 md:h-full rounded-lg overflow-hidden shadow-xl"
             >
               <img
-                src="/images/pastor-welcome.svg"
+                src={apostlesuit}
                 alt="Pastor welcome portrait"
                 className="w-full h-full object-cover"
               />
