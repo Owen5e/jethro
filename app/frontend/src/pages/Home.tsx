@@ -212,13 +212,7 @@ export default function Home() {
                 to="/about"
                 className="bg-[#e94560] hover:bg-[#d43d4f] text-white px-8 py-3 rounded-lg font-semibold transition flex items-center gap-2"
               >
-                Learn More <ArrowRight size={20} />
-              </Link>
-              <Link
-                to="/contact"
-                className="border-2 border-white hover:bg-white hover:text-[#1a1a2e] text-white px-8 py-3 rounded-lg font-semibold transition"
-              >
-                Contact Us
+                Our History <ArrowRight size={20} />
               </Link>
             </div>
           </motion.div>
