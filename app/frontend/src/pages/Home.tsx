@@ -186,7 +186,7 @@ export default function Home() {
         className="bg-gradient-to-r from-[#1a1a2e] to-[#16213e] text-white py-20 md:py-32 relative overflow-hidden"
       >
         {/* Background image */}
-        <div className="absolute inset-0 opacity-40 blur-[2px]">
+        <div className="absolute inset-0 opacity-10 blur-[2px]">
           <img
             src={heroimage}
             alt="Church worship service"

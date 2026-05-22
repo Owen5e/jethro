@@ -27,15 +27,14 @@ export default function About() {
       <motion.section
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="bg-cover  bg-no-repeat text-white py-16 md:h-70 md:pt-10 relative"
+        className="bg-cover bg-[center_10%] bg-no-repeat  text-white py-16 md:h-70 md:pt-10 relative"
         style={{
           backgroundImage: `url(${heroimage})`,
           backgroundSize: 'cover',
-          backgroundPosition: 'center',
         }}
       >
         {/* Right-side Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-transparent backdrop-blur-[2px]"></div>
+        <div className="absolute inset-0  bg-gradient-to-r from-black/60 to-transparent backdrop-blur-[4px]"></div>
         <div className="container px-4 relative z-10">
           <h1 className="text-4xl md:text-5xl font-bold">
             About Jethro Liberation Ministries Intl
