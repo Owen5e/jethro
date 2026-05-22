@@ -279,7 +279,7 @@ export default function AdminDashboard() {
     label: string,
     field: string,
     accept: string,
-    bucket: string,
+    _bucket: string,
   ) => (
     <div className="mb-4">
       <label className="block text-sm font-semibold text-[#1a1a2e] mb-1">
@@ -611,7 +611,7 @@ export default function AdminDashboard() {
                 formData.images.length > 0 &&
                 !formData._additionalImages && (
                   <div className="mt-2 flex flex-wrap gap-2">
-                    {formData.images.map((url: string, i: number) => (
+                    {formData.images.map((_url: string, i: number) => (
                       <span
                         key={i}
                         className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded"
