@@ -57,9 +57,7 @@ export default function Contact() {
         className="bg-gradient-to-r from-[#1a1a2e] to-[#16213e] text-white py-16 md:py-24"
       >
         <div className="container mx-auto px-4">
-          <h1 className="text-4xl md:text-5xl font-bold">
-            Contact Us
-          </h1>
+          <h1 className="text-4xl md:text-5xl font-bold">Contact Us</h1>
           <p className="text-lg text-gray-200 mt-4">
             We'd love to hear from you
           </p>
@@ -340,10 +338,7 @@ export default function Contact() {
         className="py-16 md:py-24 bg-[#0f3460] text-white"
       >
         <div className="container mx-auto px-4 text-center">
-          <motion.h2
-            variants={fadeInUp}
-            className="text-4xl font-bold mb-6"
-          >
+          <motion.h2 variants={fadeInUp} className="text-4xl font-bold mb-6">
             Prayer Requests
           </motion.h2>
           <motion.p

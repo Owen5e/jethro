@@ -594,10 +594,7 @@ export default function Home() {
         className="py-16 md:py-24 bg-[#0f3460] text-white"
       >
         <div className="container mx-auto px-4 text-center">
-          <motion.h2
-            variants={fadeInUp}
-            className="text-4xl font-bold mb-6"
-          >
+          <motion.h2 variants={fadeInUp} className="text-4xl font-bold mb-6">
             Support Our Mission
           </motion.h2>
           <motion.p

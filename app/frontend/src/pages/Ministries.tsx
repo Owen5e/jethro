@@ -71,9 +71,7 @@ export default function Ministries() {
         {/* Right-side Overlay */}
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-transparent"></div>
         <div className="container mx-auto px-4 z-10 relative">
-          <h1 className="text-4xl md:text-5xl font-bold">
-            Our Ministries
-          </h1>
+          <h1 className="text-4xl md:text-5xl font-bold">Our Ministries</h1>
           <p className="text-lg text-gray-200 mt-4">
             Ways to serve, grow, and connect in our faith community
           </p>
