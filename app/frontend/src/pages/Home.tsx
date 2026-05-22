@@ -13,6 +13,7 @@ import {
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import apostlesuit from '../assets/apostlesuit.png';
+import heroimage from '../assets/hero-image.png';
 import { eventsApi, sermonsApi } from '../lib/api';
 
 interface TimeRemaining {
@@ -183,13 +184,14 @@ export default function Home() {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
         className="bg-gradient-to-r from-[#1a1a2e] to-[#16213e] text-white py-20 md:py-32 relative overflow-hidden"
+        style={{ backgroundImage: `url(${heroimage})` }}
       >
         {/* Background image */}
-        <div className="absolute inset-0 opacity-40">
+        <div className="absolute inset-0 opacity-40 blur-[2px]">
           <img
-            src="/images/hero-church-worship.svg"
+            src={heroimage}
             alt="Church worship service"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover "
           />
         </div>
 
@@ -259,11 +261,7 @@ export default function Home() {
                 believe in the power of genuine relationships, authentic
                 worship, and serving our community with compassion and grace."
               </p>
-              <p className="text-lg text-gray-600">
-                "If you have any questions or would like to get more involved,
-                please don't hesitate to reach out. We'd love to connect with
-                you and help you on your spiritual journey."
-              </p>
+
               <p className="text-lg font-semibold text-[#e94560] mt-6">
                 - Apostle Emmanuel David Craig, Founder/General Overseer
               </p>

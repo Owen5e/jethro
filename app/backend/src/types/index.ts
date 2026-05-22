@@ -19,6 +19,7 @@ export interface Sermon {
   description: string | null;
   audio_url: string | null;
   video_url: string | null;
+  duration: number | null;
   created_at: string;
   updated_at: string;
 }

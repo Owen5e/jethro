@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Calendar, Clock, MapPin } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import eventshero from '../assets/eventshero.png';
 import { eventsApi } from '../lib/api';
 
 interface TimeRemaining {
@@ -82,9 +83,13 @@ export default function Events() {
       <motion.section
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="bg-gradient-to-r from-[#1a1a2e] to-[#16213e] text-white py-16 md:py-24"
+        className="bg-cover bg-[center_50%]  bg-no-repeat py-16 md:py-24 relative 
+         text-white"
+        style={{ backgroundImage: `url(${eventshero})` }}
       >
-        <div className="container mx-auto px-4">
+        {/* Right-side Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-transparent"></div>
+        <div className="container mx-auto px-4 z-10 relative">
           <h1 className="text-4xl md:text-5xl font-bold font-serif">Events</h1>
           <p className="text-lg text-gray-200 mt-4">
             Join us for worship, fellowship, and service

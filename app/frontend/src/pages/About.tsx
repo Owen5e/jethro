@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { BookOpen, Heart, Target, Users } from 'lucide-react';
 import facecardone from '../assets/facecardone.png';
 import facecardtwo from '../assets/facecardtwo.jpeg';
+import heroimage from '../assets/hero-image.png';
 
 export default function About() {
   const fadeInUp = {
@@ -26,9 +27,16 @@ export default function About() {
       <motion.section
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="bg-gradient-to-r from-[#1a1a2e] to-[#16213e] text-white py-16 md:py-24"
+        className="bg-cover  bg-no-repeat text-white py-16 md:h-70 md:pt-10 relative"
+        style={{
+          backgroundImage: `url(${heroimage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
       >
-        <div className="container mx-auto px-4">
+        {/* Right-side Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-transparent backdrop-blur-[2px]"></div>
+        <div className="container px-4 relative z-10">
           <h1 className="text-4xl md:text-5xl font-bold font-serif">
             About Jethro Liberation Ministries Intl
           </h1>

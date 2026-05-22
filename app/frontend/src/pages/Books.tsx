@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { BookOpen, ExternalLink } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import bookshero from '../assets/books-hero.png';
 import { booksApi } from '../lib/api';
 
 export default function Books() {
@@ -44,9 +45,12 @@ export default function Books() {
       <motion.section
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="bg-gradient-to-r from-[#1a1a2e] to-[#16213e] text-white py-16 md:py-24"
+        className="bg-cover bg-center  bg-no-repeat text-white py-16 md:h-70 md:pt-10 relative "
+        style={{ backgroundImage: `url(${bookshero})` }}
       >
-        <div className="container mx-auto px-4">
+        {/* Right-side Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-transparent"></div>
+        <div className="container mx-auto px-4 z-10 relative">
           <h1 className="text-4xl md:text-5xl font-bold font-serif">Books</h1>
           <p className="text-lg text-gray-200 mt-4">
             Explore our collection of faith-filled books and resources

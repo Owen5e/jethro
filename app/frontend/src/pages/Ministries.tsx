@@ -1,5 +1,7 @@
 import { motion } from 'framer-motion';
 import { BookOpen, Heart, Music, Users } from 'lucide-react';
+import ministryhero from '../assets/ministry-hero.png';
+import workerspicnic from '../assets/workerspicnic.png';
 
 export default function Ministries() {
   const fadeInUp = {
@@ -63,9 +65,12 @@ export default function Ministries() {
       <motion.section
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="bg-gradient-to-r from-[#1a1a2e] to-[#16213e] text-white py-16 md:py-24"
+        className="bg-cover bg-[center_10%]  bg-no-repeat text-white py-16 md:h-70 md:pt-10 relative "
+        style={{ backgroundImage: `url(${ministryhero})` }}
       >
-        <div className="container mx-auto px-4">
+        {/* Right-side Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-transparent"></div>
+        <div className="container mx-auto px-4 z-10 relative">
           <h1 className="text-4xl md:text-5xl font-bold font-serif">
             Our Ministries
           </h1>
@@ -116,7 +121,7 @@ export default function Ministries() {
             className="relative h-96 rounded-lg overflow-hidden shadow-xl mb-8"
           >
             <img
-              src="/images/church-community.svg"
+              src={workerspicnic}
               alt="Church community fellowship"
               className="w-full h-full object-cover"
             />
