@@ -184,7 +184,6 @@ export default function Home() {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
         className="bg-gradient-to-r from-[#1a1a2e] to-[#16213e] text-white py-20 md:py-32 relative overflow-hidden"
-        style={{ backgroundImage: `url(${heroimage})` }}
       >
         {/* Background image */}
         <div className="absolute inset-0 opacity-40 blur-[2px]">
