@@ -201,7 +201,7 @@ export default function Home() {
             animate="visible"
             className="max-w-3xl"
           >
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 font-serif">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6">
               Welcome to Jethro Liberation Ministries Intl
             </h1>
             <p className="text-lg md:text-xl text-gray-200 mb-8">
@@ -245,7 +245,7 @@ export default function Home() {
 
             {/* Welcome Message */}
             <motion.div variants={fadeInUp}>
-              <h2 className="text-4xl font-bold mb-6 text-[#1a1a2e] font-serif">
+              <h2 className="text-4xl font-bold mb-6 text-[#1a1a2e]">
                 Welcome from Our Apostle
               </h2>
               <p className="text-lg text-gray-600 mb-4">
@@ -280,7 +280,7 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <motion.h2
             variants={fadeInUp}
-            className="text-4xl font-bold text-center mb-12 text-[#1a1a2e] font-serif"
+            className="text-4xl font-bold text-center mb-12 text-[#1a1a2e]"
           >
             Why Join Us?
           </motion.h2>
@@ -331,7 +331,7 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <motion.h2
             variants={fadeInUp}
-            className="text-4xl font-bold text-center mb-12 text-[#1a1a2e] font-serif"
+            className="text-4xl font-bold text-center mb-12 text-[#1a1a2e]"
           >
             Our Services
           </motion.h2>
@@ -365,7 +365,7 @@ export default function Home() {
                 className="bg-white p-8 rounded-lg shadow-lg hover:shadow-xl transition"
               >
                 <service.icon size={40} className="text-gray-600 mb-4" />
-                <h3 className="text-2xl font-bold mb-3 text-[#1a1a2e] font-serif">
+                <h3 className="text-2xl font-bold mb-3 text-[#1a1a2e]">
                   {service.title}
                 </h3>
                 <p className="text-gray-600 mb-4">{service.description}</p>
@@ -389,7 +389,7 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <motion.h2
             variants={fadeInUp}
-            className="text-4xl font-bold text-center mb-12 font-serif"
+            className="text-4xl font-bold text-center mb-12"
           >
             Testimonies of Faith
           </motion.h2>
@@ -441,7 +441,7 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <motion.h2
             variants={fadeInUp}
-            className="text-4xl font-bold text-center mb-12 text-[#1a1a2e] font-serif"
+            className="text-4xl font-bold text-center mb-12 text-[#1a1a2e]"
           >
             Our Ministries
           </motion.h2>
@@ -502,7 +502,7 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <motion.h2
             variants={fadeInUp}
-            className="text-4xl font-bold text-center mb-12 text-[#1a1a2e] font-serif"
+            className="text-4xl font-bold text-center mb-12 text-[#1a1a2e]"
           >
             Latest Sermons
           </motion.h2>
@@ -555,7 +555,7 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <motion.h2
             variants={fadeInUp}
-            className="text-4xl font-bold text-center mb-12 text-[#1a1a2e] font-serif"
+            className="text-4xl font-bold text-center mb-12 text-[#1a1a2e]"
           >
             Upcoming Events
           </motion.h2>
@@ -596,7 +596,7 @@ export default function Home() {
         <div className="container mx-auto px-4 text-center">
           <motion.h2
             variants={fadeInUp}
-            className="text-4xl font-bold mb-6 font-serif"
+            className="text-4xl font-bold mb-6"
           >
             Support Our Mission
           </motion.h2>

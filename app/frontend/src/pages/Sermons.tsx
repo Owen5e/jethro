@@ -144,7 +144,7 @@ export default function Sermons() {
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-transparent"></div>
         <div className="absolute inset-0 bg-black/40"></div>
         <div className="container mx-auto px-4 relative z-10">
-          <h1 className="text-4xl md:text-5xl font-bold font-serif">Sermons</h1>
+          <h1 className="text-4xl md:text-5xl font-bold">Sermons</h1>
           <p className="text-lg text-gray-200 mt-4">
             Listen to our latest messages and teachings
           </p>

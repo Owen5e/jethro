@@ -51,7 +51,7 @@ export default function Books() {
         {/* Right-side Overlay */}
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-transparent"></div>
         <div className="container mx-auto px-4 z-10 relative">
-          <h1 className="text-4xl md:text-5xl font-bold font-serif">Books</h1>
+          <h1 className="text-4xl md:text-5xl font-bold">Books</h1>
           <p className="text-lg text-gray-200 mt-4">
             Explore our collection of faith-filled books and resources
           </p>

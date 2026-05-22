@@ -37,7 +37,7 @@ export default function About() {
         {/* Right-side Overlay */}
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-transparent backdrop-blur-[2px]"></div>
         <div className="container px-4 relative z-10">
-          <h1 className="text-4xl md:text-5xl font-bold font-serif">
+          <h1 className="text-4xl md:text-5xl font-bold">
             About Jethro Liberation Ministries Intl
           </h1>
         </div>
@@ -54,7 +54,7 @@ export default function About() {
         <div className="container mx-auto px-4">
           <motion.h2
             variants={fadeInUp}
-            className="text-4xl font-bold mb-6 text-[#1a1a2e] font-serif"
+            className="text-4xl font-bold mb-6 text-[#1a1a2e]"
           >
             Our History
           </motion.h2>
@@ -129,7 +129,7 @@ export default function About() {
         <div className="container mx-auto px-4">
           <motion.h2
             variants={fadeInUp}
-            className="text-4xl font-bold text-center mb-12 text-[#1a1a2e] font-serif"
+            className="text-4xl font-bold text-center mb-12 text-[#1a1a2e]"
           >
             Our Core Values
           </motion.h2>

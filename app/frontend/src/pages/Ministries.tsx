@@ -71,7 +71,7 @@ export default function Ministries() {
         {/* Right-side Overlay */}
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-transparent"></div>
         <div className="container mx-auto px-4 z-10 relative">
-          <h1 className="text-4xl md:text-5xl font-bold font-serif">
+          <h1 className="text-4xl md:text-5xl font-bold">
             Our Ministries
           </h1>
           <p className="text-lg text-gray-200 mt-4">
@@ -127,7 +127,7 @@ export default function Ministries() {
             />
           </motion.div>
           <motion.div variants={fadeInUp} className="text-center">
-            <h2 className="text-3xl font-bold text-[#1a1a2e] mb-4 font-serif">
+            <h2 className="text-3xl font-bold text-[#1a1a2e] mb-4">
               A Welcoming Community
             </h2>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">

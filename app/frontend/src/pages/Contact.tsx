@@ -57,7 +57,7 @@ export default function Contact() {
         className="bg-gradient-to-r from-[#1a1a2e] to-[#16213e] text-white py-16 md:py-24"
       >
         <div className="container mx-auto px-4">
-          <h1 className="text-4xl md:text-5xl font-bold font-serif">
+          <h1 className="text-4xl md:text-5xl font-bold">
             Contact Us
           </h1>
           <p className="text-lg text-gray-200 mt-4">
@@ -100,7 +100,7 @@ export default function Contact() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             {/* Contact Information */}
             <motion.div variants={fadeInUp}>
-              <h2 className="text-3xl font-bold text-[#1a1a2e] mb-8 font-serif">
+              <h2 className="text-3xl font-bold text-[#1a1a2e] mb-8">
                 Get In Touch
               </h2>
               <div className="space-y-6">
@@ -276,7 +276,7 @@ export default function Contact() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-8">
               {/* Location Info */}
               <div>
-                <h3 className="text-2xl font-bold text-[#1a1a2e] mb-6 font-serif">
+                <h3 className="text-2xl font-bold text-[#1a1a2e] mb-6">
                   Church Location
                 </h3>
                 <div className="space-y-4">
@@ -342,7 +342,7 @@ export default function Contact() {
         <div className="container mx-auto px-4 text-center">
           <motion.h2
             variants={fadeInUp}
-            className="text-4xl font-bold mb-6 font-serif"
+            className="text-4xl font-bold mb-6"
           >
             Prayer Requests
           </motion.h2>
