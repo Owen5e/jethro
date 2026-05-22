@@ -177,13 +177,13 @@ export default function Home() {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full ">
       {/* Hero Section */}
       <motion.section
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
-        className="bg-gradient-to-r from-[#1a1a2e] to-[#16213e] text-white py-20 md:py-32 relative overflow-hidden"
+        className="bg-gradient-to-r from-[#1a1a2e] to-[#16213e] text-white py-20 md:py-32 relative overflow-hidden h-[90dvh]"
       >
         {/* Background image */}
         <div className="absolute inset-0 opacity-10 blur-[2px]">
