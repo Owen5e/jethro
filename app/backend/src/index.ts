@@ -5,6 +5,7 @@ import express from 'express';
 import blogRouter from './routes/blog';
 import booksRouter from './routes/books';
 import eventsRouter from './routes/events';
+import paymentsRouter from './routes/payments';
 import sermonsRouter from './routes/sermons';
 import uploadRouter from './routes/upload';
 
@@ -30,6 +31,7 @@ app.use('/api/events', eventsRouter);
 app.use('/api/sermons', sermonsRouter);
 app.use('/api/books', booksRouter);
 app.use('/api/blog', blogRouter);
+app.use('/api/payments', paymentsRouter);
 app.use('/api/upload', uploadRouter);
 
 // Health check
