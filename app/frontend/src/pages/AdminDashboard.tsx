@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import {
+  type LucideIcon,
   BookOpen,
   Calendar,
   Edit2,
@@ -12,7 +13,7 @@ import {
   Upload,
   X,
 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   blogApi,
   booksApi,
@@ -23,19 +24,67 @@ import {
 
 type TabType = 'events' | 'sermons' | 'books' | 'blog';
 
-interface FormData {
-  [key: string]: any;
-}
+/**
+ * A row from any of the four admin collections. Every field is optional because
+ * the table renders whichever shape the active tab needs, and fields are shared
+ * between tabs. `type` rather than `interface` on purpose: only a type alias of
+ * an object literal gets an implicit index signature, which is what lets a row
+ * be handed to the generic form state below without a cast.
+ */
+type AdminRow = {
+  id: string;
+  title?: string;
+  author?: string;
+  category?: string;
+  date?: string;
+  time?: string;
+  location?: string;
+  created_at?: string;
+  updated_at?: string;
+  description?: string | null;
+  duration?: number | null;
+  image_url?: string | null;
+  link_url?: string;
+  header_image?: string | null;
+  audio_url?: string | null;
+  video_url?: string | null;
+  images?: string[] | null;
+  testimonies?: string[] | null;
+};
+
+/**
+ * The create/edit form renders one set of inputs for four different record
+ * shapes, so its state is a deliberately permissive bag: `string` and `number`
+ * cover every text/date/time/number input, `File`/`FileList`/`File[]` cover the
+ * uploads, and untouched fields are simply undefined. Read a value back with
+ * `asText()` before putting it in a controlled input.
+ */
+type FormValue =
+  | string
+  | number
+  | boolean
+  | null
+  | undefined
+  | File
+  | FileList
+  | string[]
+  | File[];
+
+type FormValues = Record<string, FormValue>;
+
+/** A catch clause binds `unknown`; this is the safe way to get its message. */
+const errMessage = (err: unknown, fallback: string) =>
+  err instanceof Error && err.message ? err.message : fallback;
 
 export default function AdminDashboard() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [password, setPassword] = useState('');
   const [activeTab, setActiveTab] = useState<TabType>('events');
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<AdminRow[]>([]);
   const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [formData, setFormData] = useState<FormData>({});
+  const [formData, setFormData] = useState<FormValues>({});
   const [error, setError] = useState('');
   const [uploading, setUploading] = useState(false);
 
@@ -44,9 +93,27 @@ export default function AdminDashboard() {
     visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
   };
 
+  /** Read a form value back out of the bag for display in a controlled input. */
+  const asText = (value: FormValue) =>
+    typeof value === 'string' || typeof value === 'number' ? String(value) : '';
+
+  /** The upload keys (`_imageFile`, `_additionalImages`, ...) hold Files. */
+  const asFiles = (value: FormValue): File[] =>
+    Array.isArray(value)
+      ? value.filter((entry): entry is File => entry instanceof File)
+      : [];
+
+  /** `images` holds uploaded URLs, never Files. */
+  const asStrings = (value: FormValue): string[] =>
+    Array.isArray(value)
+      ? value.filter((entry): entry is string => typeof entry === 'string')
+      : [];
+
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     localStorage.setItem('admin_token', password);
+    setLoading(true);
+    setError('');
     setIsLoggedIn(true);
     setPassword('');
   };
@@ -57,18 +124,16 @@ export default function AdminDashboard() {
     setData([]);
   };
 
-  const tabs: { key: TabType; label: string; icon: any }[] = [
+  const tabs: { key: TabType; label: string; icon: LucideIcon }[] = [
     { key: 'events', label: 'Events', icon: Calendar },
     { key: 'sermons', label: 'Sermons', icon: Mic },
     { key: 'books', label: 'Books', icon: BookOpen },
     { key: 'blog', label: 'Blog', icon: FileText },
   ];
 
-  const fetchData = async () => {
-    setLoading(true);
-    setError('');
+  const fetchData = useCallback(async () => {
     try {
-      let result;
+      let result: AdminRow[] = [];
       switch (activeTab) {
         case 'events':
           result = await eventsApi.getAll();
@@ -83,20 +148,40 @@ export default function AdminDashboard() {
           result = await blogApi.getAll();
           break;
       }
-      setData(result || []);
-    } catch (err: any) {
-      setError(err.message || 'Failed to fetch data');
+      setData(result);
+    } catch (err: unknown) {
+      setError(errMessage(err, 'Failed to fetch data'));
       setData([]);
     } finally {
       setLoading(false);
     }
+  }, [activeTab]);
+
+  /**
+   * Flag the UI as loading and refetch. Used by the event handlers (login, tab
+   * switch, save, delete): the flags are set here rather than inside fetchData
+   * because an effect may not set state synchronously (react-hooks v7's
+   * set-state-in-effect), and setting them where the fetch is triggered also
+   * avoids a second render before the request starts.
+   */
+  const loadData = () => {
+    setLoading(true);
+    setError('');
+    void fetchData();
   };
 
   useEffect(() => {
-    if (isLoggedIn) {
-      fetchData();
-    }
-  }, [isLoggedIn, activeTab]);
+    if (!isLoggedIn) return;
+    // Everything fetchData sets lands after its own await, but react-hooks v7's
+    // set-state-in-effect flags a *direct* call to a state-setting function from
+    // an effect body, so the request is kicked off inside an async function
+    // instead. Behaviour is unchanged: nothing here runs before this effect
+    // returns, and the fetch still resolves a tick later.
+    const runFetch = async () => {
+      await fetchData();
+    };
+    void runFetch();
+  }, [isLoggedIn, fetchData]);
 
   const resetForm = () => {
     setFormData({});
@@ -105,7 +190,7 @@ export default function AdminDashboard() {
     setError('');
   };
 
-  const handleEdit = (item: any) => {
+  const handleEdit = (item: AdminRow) => {
     setFormData(item);
     setEditingId(item.id);
     setShowForm(true);
@@ -128,9 +213,9 @@ export default function AdminDashboard() {
           await blogApi.delete(id);
           break;
       }
-      fetchData();
-    } catch (err: any) {
-      alert(err.message || 'Failed to delete');
+      loadData();
+    } catch (err: unknown) {
+      alert(errMessage(err, 'Failed to delete'));
     }
   };
 
@@ -139,8 +224,8 @@ export default function AdminDashboard() {
     try {
       const result = await uploadApi.upload(file, bucket);
       return result.url;
-    } catch (err: any) {
-      setError(err.message || 'Failed to upload file');
+    } catch (err: unknown) {
+      setError(errMessage(err, 'Failed to upload file'));
       return null;
     } finally {
       setUploading(false);
@@ -261,13 +346,13 @@ export default function AdminDashboard() {
         }
       }
       resetForm();
-      fetchData();
-    } catch (err: any) {
-      setError(err.message || 'Failed to save');
+      loadData();
+    } catch (err: unknown) {
+      setError(errMessage(err, 'Failed to save'));
     }
   };
 
-  const handleInputChange = (field: string, value: any) => {
+  const handleInputChange = (field: string, value: FormValue) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -279,7 +364,6 @@ export default function AdminDashboard() {
     label: string,
     field: string,
     accept: string,
-    _bucket: string,
   ) => (
     <div className="mb-4">
       <label className="block text-sm font-semibold text-[#1a1a2e] mb-1">
@@ -316,7 +400,7 @@ export default function AdminDashboard() {
       </div>
       {formData[`_${field}Preview`] && (
         <img
-          src={formData[`_${field}Preview`]}
+          src={asText(formData[`_${field}Preview`])}
           alt="Preview"
           className="mt-2 h-20 rounded object-cover"
         />
@@ -335,13 +419,13 @@ export default function AdminDashboard() {
               </label>
               <input
                 type="text"
-                value={formData.title || ''}
+                value={asText(formData['title'])}
                 onChange={(e) => handleInputChange('title', e.target.value)}
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#e94560]"
               />
             </div>
-            {renderFileInput('Image', '_imageFile', 'image/*', 'event-images')}
+            {renderFileInput('Image', '_imageFile', 'image/*')}
             <div className="grid grid-cols-2 gap-4 mb-4">
               <div>
                 <label className="block text-sm font-semibold text-[#1a1a2e] mb-1">
@@ -349,7 +433,7 @@ export default function AdminDashboard() {
                 </label>
                 <input
                   type="date"
-                  value={formData.date || ''}
+                  value={asText(formData['date'])}
                   onChange={(e) => handleInputChange('date', e.target.value)}
                   required
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#e94560]"
@@ -361,7 +445,7 @@ export default function AdminDashboard() {
                 </label>
                 <input
                   type="time"
-                  value={formData.time || ''}
+                  value={asText(formData['time'])}
                   onChange={(e) => handleInputChange('time', e.target.value)}
                   required
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#e94560]"
@@ -374,7 +458,7 @@ export default function AdminDashboard() {
               </label>
               <input
                 type="text"
-                value={formData.location || ''}
+                value={asText(formData['location'])}
                 onChange={(e) => handleInputChange('location', e.target.value)}
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#e94560]"
@@ -385,7 +469,7 @@ export default function AdminDashboard() {
                 Description
               </label>
               <textarea
-                value={formData.description || ''}
+                value={asText(formData['description'])}
                 onChange={(e) =>
                   handleInputChange('description', e.target.value)
                 }
@@ -404,7 +488,7 @@ export default function AdminDashboard() {
               </label>
               <input
                 type="text"
-                value={formData.title || ''}
+                value={asText(formData['title'])}
                 onChange={(e) => handleInputChange('title', e.target.value)}
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#e94560]"
@@ -416,7 +500,7 @@ export default function AdminDashboard() {
               </label>
               <input
                 type="text"
-                value={formData.author || ''}
+                value={asText(formData['author'])}
                 onChange={(e) => handleInputChange('author', e.target.value)}
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#e94560]"
@@ -429,7 +513,7 @@ export default function AdminDashboard() {
                 </label>
                 <input
                   type="date"
-                  value={formData.date || ''}
+                  value={asText(formData['date'])}
                   onChange={(e) => handleInputChange('date', e.target.value)}
                   required
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#e94560]"
@@ -440,7 +524,7 @@ export default function AdminDashboard() {
                   Category *
                 </label>
                 <select
-                  value={formData.category || ''}
+                  value={asText(formData['category'])}
                   onChange={(e) =>
                     handleInputChange('category', e.target.value)
                   }
@@ -464,7 +548,7 @@ export default function AdminDashboard() {
                 Description
               </label>
               <textarea
-                value={formData.description || ''}
+                value={asText(formData['description'])}
                 onChange={(e) =>
                   handleInputChange('description', e.target.value)
                 }
@@ -472,14 +556,14 @@ export default function AdminDashboard() {
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#e94560]"
               />
             </div>
-            {renderFileInput('Audio', '_audioFile', 'audio/*', 'sermon-audio')}
+            {renderFileInput('Audio', '_audioFile', 'audio/*')}
             <div className="mb-4">
               <label className="block text-sm font-semibold text-[#1a1a2e] mb-1">
                 Video URL
               </label>
               <input
                 type="url"
-                value={formData.video_url || ''}
+                value={asText(formData['video_url'])}
                 onChange={(e) => handleInputChange('video_url', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#e94560]"
                 placeholder="https://youtube.com/..."
@@ -496,7 +580,7 @@ export default function AdminDashboard() {
               </label>
               <input
                 type="text"
-                value={formData.title || ''}
+                value={asText(formData['title'])}
                 onChange={(e) => handleInputChange('title', e.target.value)}
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#e94560]"
@@ -508,20 +592,20 @@ export default function AdminDashboard() {
               </label>
               <input
                 type="text"
-                value={formData.author || ''}
+                value={asText(formData['author'])}
                 onChange={(e) => handleInputChange('author', e.target.value)}
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#e94560]"
               />
             </div>
-            {renderFileInput('Image', '_imageFile', 'image/*', 'book-images')}
+            {renderFileInput('Image', '_imageFile', 'image/*')}
             <div className="mb-4">
               <label className="block text-sm font-semibold text-[#1a1a2e] mb-1">
                 Link/URL *
               </label>
               <input
                 type="url"
-                value={formData.link_url || ''}
+                value={asText(formData['link_url'])}
                 onChange={(e) => handleInputChange('link_url', e.target.value)}
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#e94560]"
@@ -539,7 +623,7 @@ export default function AdminDashboard() {
               </label>
               <input
                 type="text"
-                value={formData.title || ''}
+                value={asText(formData['title'])}
                 onChange={(e) => handleInputChange('title', e.target.value)}
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#e94560]"
@@ -550,7 +634,7 @@ export default function AdminDashboard() {
                 Description
               </label>
               <textarea
-                value={formData.description || ''}
+                value={asText(formData['description'])}
                 onChange={(e) =>
                   handleInputChange('description', e.target.value)
                 }
@@ -558,12 +642,7 @@ export default function AdminDashboard() {
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#e94560]"
               />
             </div>
-            {renderFileInput(
-              'Header Image',
-              '_headerImageFile',
-              'image/*',
-              'blog-images',
-            )}
+            {renderFileInput('Header Image', '_headerImageFile', 'image/*')}
             <div className="mb-4">
               <label className="block text-sm font-semibold text-[#1a1a2e] mb-1">
                 Additional Images
@@ -584,10 +663,9 @@ export default function AdminDashboard() {
                   />
                 </label>
               </div>
-              {Array.isArray(formData._additionalImages) &&
-                formData._additionalImages.length > 0 && (
+              {asFiles(formData._additionalImages).length > 0 && (
                   <div className="mt-2 flex flex-wrap gap-2">
-                    {formData._additionalImages.map((file: File, i: number) => (
+                    {asFiles(formData._additionalImages).map((file, i) => (
                       <div key={i} className="relative">
                         <span className="text-xs bg-gray-200 px-2 py-1 rounded">
                           {file.name}
@@ -595,7 +673,9 @@ export default function AdminDashboard() {
                         <button
                           type="button"
                           onClick={() => {
-                            const remaining = [...formData._additionalImages];
+                            const remaining = asFiles(
+                              formData._additionalImages,
+                            );
                             remaining.splice(i, 1);
                             handleInputChange('_additionalImages', remaining);
                           }}
@@ -607,11 +687,10 @@ export default function AdminDashboard() {
                     ))}
                   </div>
                 )}
-              {Array.isArray(formData.images) &&
-                formData.images.length > 0 &&
+              {asStrings(formData.images).length > 0 &&
                 !formData._additionalImages && (
                   <div className="mt-2 flex flex-wrap gap-2">
-                    {formData.images.map((_url: string, i: number) => (
+                    {asStrings(formData.images).map((_url, i) => (
                       <span
                         key={i}
                         className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded"
@@ -622,14 +701,14 @@ export default function AdminDashboard() {
                   </div>
                 )}
             </div>
-            {renderFileInput('Audio', '_audioFile', 'audio/*', 'blog-audio')}
+            {renderFileInput('Audio', '_audioFile', 'audio/*')}
             <div className="mb-4">
               <label className="block text-sm font-semibold text-[#1a1a2e] mb-1">
                 Video URL
               </label>
               <input
                 type="url"
-                value={formData.video_url || ''}
+                value={asText(formData['video_url'])}
                 onChange={(e) => handleInputChange('video_url', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#e94560]"
                 placeholder="https://youtube.com/..."
@@ -643,7 +722,7 @@ export default function AdminDashboard() {
                 value={
                   Array.isArray(formData.testimonies)
                     ? formData.testimonies.join('\n')
-                    : formData.testimonies || ''
+                    : asText(formData.testimonies)
                 }
                 onChange={(e) =>
                   handleInputChange(
@@ -674,7 +753,7 @@ export default function AdminDashboard() {
     }
   };
 
-  const renderTableRow = (item: any) => {
+  const renderTableRow = (item: AdminRow) => {
     switch (activeTab) {
       case 'events':
         return (
@@ -767,7 +846,7 @@ export default function AdminDashboard() {
               {item.title}
             </td>
             <td className="px-6 py-4 text-gray-600">
-              {new Date(item.created_at).toLocaleDateString()}
+              {new Date(item.created_at ?? '').toLocaleDateString()}
             </td>
           </>
         );
@@ -862,6 +941,10 @@ export default function AdminDashboard() {
               <button
                 key={tab.key}
                 onClick={() => {
+                  if (tab.key !== activeTab) {
+                    setLoading(true);
+                    setError('');
+                  }
                   setActiveTab(tab.key);
                   setShowForm(false);
                 }}

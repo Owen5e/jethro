@@ -1,0 +1,85 @@
+name: CI
+
+# jethro is two independent packages sitting side by side under app/ — there is
+# no root package.json — so every job has to cd into the package it is testing
+# (see `defaults.run.working-directory` below). Node 24 is pinned for both:
+# Vite 8 needs ^20.19 || >=22.12, ESLint 10 needs ^20.19 || ^22.13 || >=24, and
+# 24 is the current LTS on GitHub's runners.
+#
+# The backend is a plain `tsc` build (Express 5 + TS), so its gate is the
+# compiler: if `npm run build` exits 0 there are no type errors. The frontend
+# gate is ESLint + `tsc -b && vite build`.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# Never let an older run of the same branch race a newer one.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  frontend:
+    name: Frontend — lint, typecheck, build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: app/frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: app/frontend/package-lock.json
+
+      # npm ci, not npm install: it installs exactly the lockfile and fails if
+      # package.json and the lock disagree, which is the whole point of running
+      # this on every push.
+      - name: Install
+        run: npm ci
+
+      # eslint.config.js is flat-config (js + typescript-eslint + react-hooks +
+      # react-refresh). Errors fail the job; warnings do not.
+      - name: Lint
+        run: npm run lint
+
+      # `build` is `tsc -b && vite build`, so this step is the typecheck AND the
+      # production bundle in one. VITE_* vars are read at build time from
+      # import.meta.env; the Paystack key is optional here (Giving.tsx falls
+      # back to a "not configured" message), so no value is injected on purpose
+      # — a placeholder would bake a fake key into the bundle.
+      - name: Build
+        run: npm run build
+
+  backend:
+    name: Backend — typecheck, build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: app/backend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: app/backend/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      # app/backend/src/config/supabase.ts throws at import time when
+      # SUPABASE_URL / SUPABASE_SERVICE_KEY are missing, which is correct
+      # runtime behaviour but would fail any step that actually loads the app.
+      # `tsc` only compiles, so nothing is executed and no secrets are needed —
+      # if a future step ever boots the server, it must supply its own values.
+      - name: Build
+        run: npm run build

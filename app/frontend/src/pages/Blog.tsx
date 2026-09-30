@@ -2,12 +2,13 @@ import { motion } from 'framer-motion';
 import { Calendar, Newspaper } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { blogApi } from '../lib/api';
+import type { BlogArticle } from '../types';
 
 export default function Blog() {
-  const [articles, setArticles] = useState<any[]>([]);
+  const [articles, setArticles] = useState<BlogArticle[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedArticle, setSelectedArticle] = useState<string | null>(null);
-  const [articleDetail, setArticleDetail] = useState<any>(null);
+  const [articleDetail, setArticleDetail] = useState<BlogArticle | null>(null);
 
   useEffect(() => {
     const fetchArticles = async () => {
@@ -99,7 +100,7 @@ export default function Blog() {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {articles.map((article: any) => (
+              {articles.map((article) => (
                 <motion.div
                   key={article.id}
                   variants={fadeInUp}

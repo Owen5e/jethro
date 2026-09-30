@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import type { Event, Sermon } from '../types';
 import apostlesuit from '../assets/apostlesuit.png';
 import heroimage from '../assets/hero-image.png';
 import { eventsApi, sermonsApi } from '../lib/api';
@@ -54,7 +55,7 @@ function useCountdown(targetDate: string): TimeRemaining {
 }
 
 interface EventCardProps {
-  event: any;
+  event: Event;
   fadeInUp: {
     hidden: { opacity: number; y: number };
     visible: { opacity: number; y: number; transition: { duration: number } };
@@ -136,8 +137,8 @@ function EventCard({ event, fadeInUp }: EventCardProps) {
 }
 
 export default function Home() {
-  const [upcomingEvents, setUpcomingEvents] = useState<any[]>([]);
-  const [latestSermons, setLatestSermons] = useState<any[]>([]);
+  const [upcomingEvents, setUpcomingEvents] = useState<Event[]>([]);
+  const [latestSermons, setLatestSermons] = useState<Sermon[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -516,7 +517,7 @@ export default function Home() {
                 No sermons available yet.
               </div>
             ) : (
-              latestSermons.map((sermon: any) => (
+              latestSermons.map((sermon) => (
                 <motion.div
                   key={sermon.id}
                   variants={fadeInUp}
@@ -569,7 +570,7 @@ export default function Home() {
                 No upcoming events at this time.
               </div>
             ) : (
-              upcomingEvents.map((event: any) => (
+              upcomingEvents.map((event) => (
                 <EventCard key={event.id} event={event} fadeInUp={fadeInUp} />
               ))
             )}

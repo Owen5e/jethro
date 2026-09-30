@@ -1,7 +1,8 @@
-import { motion } from 'framer-motion';
+import { motion, type Variants } from 'framer-motion';
 import { Calendar, Clock, MapPin } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import eventshero from '../assets/eventshero.png';
+import type { Event } from '../types';
 import { eventsApi } from '../lib/api';
 
 interface TimeRemaining {
@@ -42,7 +43,7 @@ function useCountdown(targetDate: string): TimeRemaining {
 }
 
 export default function Events() {
-  const [events, setEvents] = useState<any[]>([]);
+  const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedEvent, setSelectedEvent] = useState<string | null>(null);
 
@@ -118,7 +119,7 @@ export default function Events() {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {events.map((event: any) => (
+              {events.map((event) => (
                 <EventCard
                   key={event.id}
                   event={event}
@@ -136,10 +137,10 @@ export default function Events() {
 }
 
 interface EventCardProps {
-  event: any;
+  event: Event;
   selectedEvent: string | null;
   setSelectedEvent: (id: string | null) => void;
-  fadeInUp: any;
+  fadeInUp: Variants;
 }
 
 function EventCard({

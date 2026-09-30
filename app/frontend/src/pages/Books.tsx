@@ -2,10 +2,11 @@ import { motion } from 'framer-motion';
 import { BookOpen, ExternalLink } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import bookshero from '../assets/books-hero.png';
+import type { Book } from '../types';
 import { booksApi } from '../lib/api';
 
 export default function Books() {
-  const [books, setBooks] = useState<any[]>([]);
+  const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -85,7 +86,7 @@ export default function Books() {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {books.map((book: any) => (
+              {books.map((book) => (
                 <motion.div
                   key={book.id}
                   variants={fadeInUp}
