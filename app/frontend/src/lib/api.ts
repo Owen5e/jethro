@@ -1,11 +1,21 @@
+import type { BlogArticle, Book, Event, Sermon } from '../types';
+
 const API_BASE = import.meta.env.PROD
   ? 'https://jethro.onrender.com/api'
   : 'http://localhost:3001/api';
 
-async function request<T>(
-  endpoint: string,
-  options: RequestInit = {},
-): Promise<T> {
+/**
+ * Request bodies are intentionally `Record<string, unknown>` rather than a
+ * per-endpoint type: the admin dashboard posts one bag of form values for four
+ * different record shapes and the API is what validates and normalises it.
+ * Responses, which is what callers actually consume, are typed precisely.
+ */
+type Body = Record<string, unknown>;
+
+/** Shape of the JSON error payload the backend returns on failure. */
+type ErrorBody = { error?: string };
+
+async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const token = localStorage.getItem('admin_token');
 
   const headers: Record<string, string> = {
@@ -24,31 +34,31 @@ async function request<T>(
   });
 
   if (!response.ok) {
-    const error = await response
+    const error: ErrorBody = await response
       .json()
-      .catch(() => ({ error: 'Request failed' }));
+      .catch((): ErrorBody => ({ error: 'Request failed' }));
     throw new Error(error.error || `HTTP ${response.status}`);
   }
 
-  return response.json();
+  return response.json() as Promise<T>;
 }
 
 // Events
 export const eventsApi = {
-  getAll: () => request<any[]>('/events'),
-  getUpcoming: () => request<any[]>('/events/upcoming'),
-  getById: (id: string) => request<any>(`/events/${id}`),
-  create: (data: any) =>
-    request<any>('/events', {
+  getAll: () => request<Event[]>('/events'),
+  getUpcoming: () => request<Event[]>('/events/upcoming'),
+  getById: (id: string) => request<Event>(`/events/${id}`),
+  create: (data: Body) =>
+    request<Event>('/events', {
       method: 'POST',
       body: JSON.stringify(data),
     }),
-  update: (id: string, data: any) =>
-    request<any>(`/events/${id}`, {
+  update: (id: string, data: Body) =>
+    request<Event>(`/events/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),
     }),
-  delete: (id: string) => request<any>(`/events/${id}`, { method: 'DELETE' }),
+  delete: (id: string) => request<Event>(`/events/${id}`, { method: 'DELETE' }),
 };
 
 // Sermons
@@ -58,59 +68,63 @@ export const sermonsApi = {
     if (params?.search) query.set('search', params.search);
     if (params?.category) query.set('category', params.category);
     const qs = query.toString();
-    return request<any[]>(`/sermons${qs ? `?${qs}` : ''}`);
+    return request<Sermon[]>(`/sermons${qs ? `?${qs}` : ''}`);
   },
-  getById: (id: string) => request<any>(`/sermons/${id}`),
-  create: (data: any) =>
-    request<any>('/sermons', {
+  getById: (id: string) => request<Sermon>(`/sermons/${id}`),
+  create: (data: Body) =>
+    request<Sermon>('/sermons', {
       method: 'POST',
       body: JSON.stringify(data),
     }),
-  update: (id: string, data: any) =>
-    request<any>(`/sermons/${id}`, {
+  update: (id: string, data: Body) =>
+    request<Sermon>(`/sermons/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),
     }),
-  delete: (id: string) => request<any>(`/sermons/${id}`, { method: 'DELETE' }),
+  delete: (id: string) =>
+    request<Sermon>(`/sermons/${id}`, { method: 'DELETE' }),
 };
 
 // Books
 export const booksApi = {
-  getAll: () => request<any[]>('/books'),
-  getById: (id: string) => request<any>(`/books/${id}`),
-  create: (data: any) =>
-    request<any>('/books', {
+  getAll: () => request<Book[]>('/books'),
+  getById: (id: string) => request<Book>(`/books/${id}`),
+  create: (data: Body) =>
+    request<Book>('/books', {
       method: 'POST',
       body: JSON.stringify(data),
     }),
-  update: (id: string, data: any) =>
-    request<any>(`/books/${id}`, {
+  update: (id: string, data: Body) =>
+    request<Book>(`/books/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),
     }),
-  delete: (id: string) => request<any>(`/books/${id}`, { method: 'DELETE' }),
+  delete: (id: string) => request<Book>(`/books/${id}`, { method: 'DELETE' }),
 };
 
 // Blog
 export const blogApi = {
-  getAll: () => request<any[]>('/blog'),
-  getById: (id: string) => request<any>(`/blog/${id}`),
-  create: (data: any) =>
-    request<any>('/blog', {
+  getAll: () => request<BlogArticle[]>('/blog'),
+  getById: (id: string) => request<BlogArticle>(`/blog/${id}`),
+  create: (data: Body) =>
+    request<BlogArticle>('/blog', {
       method: 'POST',
       body: JSON.stringify(data),
     }),
-  update: (id: string, data: any) =>
-    request<any>(`/blog/${id}`, {
+  update: (id: string, data: Body) =>
+    request<BlogArticle>(`/blog/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),
     }),
-  delete: (id: string) => request<any>(`/blog/${id}`, { method: 'DELETE' }),
+  delete: (id: string) =>
+    request<BlogArticle>(`/blog/${id}`, { method: 'DELETE' }),
 };
 
 // Upload
+export type UploadResult = { url: string };
+
 export const uploadApi = {
-  upload: async (file: File, bucket: string) => {
+  upload: async (file: File, bucket: string): Promise<UploadResult> => {
     const token = localStorage.getItem('admin_token');
     const formData = new FormData();
     formData.append('file', file);
@@ -123,12 +137,12 @@ export const uploadApi = {
     });
 
     if (!response.ok) {
-      const error = await response
+      const error: ErrorBody = await response
         .json()
-        .catch(() => ({ error: 'Upload failed' }));
+        .catch((): ErrorBody => ({ error: 'Upload failed' }));
       throw new Error(error.error || 'Upload failed');
     }
 
-    return response.json();
+    return response.json() as Promise<UploadResult>;
   },
 };

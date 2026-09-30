@@ -11,10 +11,11 @@ import {
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import sermonImage from '../assets/sermonimage.png';
+import type { Sermon } from '../types';
 import { sermonsApi } from '../lib/api';
 
 export default function Sermons() {
-  const [sermons, setSermons] = useState<any[]>([]);
+  const [sermons, setSermons] = useState<Sermon[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -211,7 +212,7 @@ export default function Sermons() {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {sermons.map((sermon: any) => (
+              {sermons.map((sermon) => (
                 <motion.div
                   key={sermon.id}
                   variants={fadeInUp}
