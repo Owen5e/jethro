@@ -83,3 +83,23 @@ jobs:
       # if a future step ever boots the server, it must supply its own values.
       - name: Build
         run: npm run build
+
+  secret-scan:
+    name: Secret scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      # Deliberately dependency-free and secret-free: this job's only purpose is
+      # to fail loudly when a credential is committed, so it must never be able
+      # to fail for any other reason. It reads the tracked tree, checks both key
+      # generations (legacy `eyJ` JWTs and `sb_secret_…` keys) and refuses whole
+      # files by name. It prints file and line, never the value — this repo is
+      # public, and a scanner that echoes what it finds publishes the leak.
+      #
+      # Context: locks.txt (project URL + anon and service_role JWTs) sat in this
+      # repo from 11 May 2026 until a manual read on 30 Sep 2026. Nothing was
+      # watching. This is the watcher.
+      - name: Scan the tracked tree for credentials
+        run: python3 scripts/secret-scan.py
