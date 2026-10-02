@@ -1,0 +1,25 @@
+# Secrets must never be committed to this repository (it is public).
+#
+# Context: `locks.txt` held the Supabase project URL plus `anon` and
+# `service_role` JWTs here from 11 May 2026 to 30 Sep 2026, and
+# `app/frontend/.env` held a live Paystack key. Both are ignored by name now, and
+# `scripts/secret-scan.py` runs in CI to catch the next one. Use the committed
+# `.env.example` files as templates — never a real `.env`.
+
+# Environment files (examples are deliberately allowed through).
+.env
+.env.*
+!.env.example
+!*.env.example
+
+# Credential dumps.
+locks.txt
+*.pem
+*.p12
+*.pfx
+
+# OS / editor noise.
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
