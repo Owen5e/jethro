@@ -1,192 +1,156 @@
-# Jethro Liberation Ministries Intl - Church Website
+# Jethro Liberation Ministries International — website
 
-A modern, responsive church website built for Jethro Liberation Ministries International. The site serves as a digital presence for the ministry, providing information about services, events, sermons, ministries, and ways to give.
+The public website for **Jethro Liberation Ministries Intl**: home page, about, ministries, sermons,
+events, giving, contact, plus an admin dashboard for managing content. React 19 frontend on Vite,
+with an Express 5 + Supabase API alongside it in the same repository.
 
-## Tech Stack
+| | |
+| --- | --- |
+| **Live site** | https://jethro-sable.vercel.app |
+| **API** | https://jethro.onrender.com/api (`/api/health` for a liveness check) |
+| **Stack** | React 19 · TypeScript · Vite 8 · Tailwind CSS 4 · Framer Motion · React Router 7 · Express 5 · Supabase (Postgres) · Paystack |
+| **Node** | 24.x recommended (Vite 8 needs `^20.19 \|\| >=22.12`; ESLint 10 needs `^20.19 \|\| ^22.13 \|\| >=24`) |
+| **Repo** | https://github.com/Owen5e/jethro |
 
-- **Vite** - Build tool and dev server
-- **React 19** - UI framework
-- **TypeScript** - Type-safe JavaScript
-- **Tailwind CSS v4** - Utility-first CSS framework
-- **Framer Motion** - Animation library
-- **React Router** - Client-side routing
-- **Lucide React** - Icon library
+## What it is
 
-## Project Structure
+A single-page React site with client-side routing for the whole public face of the ministry —
+service times, upcoming events with live countdowns, a searchable sermon archive, ministry
+descriptions, leadership, an online giving form, and a contact page with prayer requests. Content is
+served by the Express API in `app/backend/`, which reads and writes Supabase tables for events,
+sermons, books, blog posts and payments, and accepts image uploads.
 
 ```
-app/frontend/
-├── public/                  # Static assets
-├── src/
-│   ├── assets/              # Images and media
-│   ├── components/
-│   │   ├── Footer.tsx       # Site-wide footer
-│   │   ├── MobileMenu.tsx   # Mobile navigation menu
-│   │   ├── Navbar.tsx       # Site-wide navigation bar
-│   │   └── ui/              # shadcn/ui components
-│   ├── hooks/               # Custom React hooks
-│   ├── lib/
-│   │   └── utils.ts         # Utility functions
-│   ├── pages/
-│   │   ├── About.tsx        # Church history, vision, leadership
-│   │   ├── AdminDashboard.tsx # Admin panel for content management
-│   │   ├── Blog.tsx         # Blog page (coming soon)
-│   │   ├── Books.tsx        # Books & resources page (coming soon)
-│   │   ├── Contact.tsx      # Contact form, map, prayer requests
-│   │   ├── Events.tsx       # Events with countdown timers
-│   │   ├── Giving.tsx       # Online donation form
-│   │   ├── Home.tsx         # Landing page with all sections
-│   │   ├── Ministries.tsx   # Ministry descriptions
-│   │   └── Sermons.tsx      # Sermon archive with search/filter
-│   ├── App.tsx              # Router setup
-│   ├── App.css              # App-level styles
-│   ├── index.css            # Global styles & Tailwind theme
-│   └── main.tsx             # Entry point
-├── index.html               # HTML entry point
-├── package.json             # Dependencies and scripts
-├── vite.config.ts           # Vite configuration
-└── tsconfig.json            # TypeScript configuration
+app/
+├── frontend/    React 19 + Vite SPA  (port 5173)
+└── backend/     Express 5 + TypeScript API against Supabase  (port 3001)
 ```
 
-## Pages & Features
+There is **no root `package.json`** — the two packages are independent, so every install and every
+command happens inside the package you want. CI cds into each one the same way.
 
-### Home Page
+## Why it exists
 
-- Hero section with welcome message and CTA buttons
-- Pastor welcome section
-- "Why Join Us" highlights
-- Service times display
-- Testimonials from church members
-- Ministries preview
-- Latest sermons preview
-- **Upcoming Events** - 4 closest event cards with live countdown timers (days, hours, minutes, seconds)
-- Giving/donation CTA section
+The ministry needed a real digital presence: one place for service times, sermons, events and
+giving, that a non-technical admin could keep current without a developer. The admin dashboard
+(`/admin`, demo password `admin123`) is that concession — a password-gated CRUD surface over the
+same records the public pages read, so the site stays alive between visits.
 
-### About Page
+## Pages
 
-- Church history and founding story
-- Mission and vision statements
-- Core values
-- Leadership profiles
+| Route | What is there |
+| --- | --- |
+| `/` | Hero, pastor's welcome, "why join us", service times, testimonials, ministries preview, latest sermons, the four nearest upcoming events with live countdowns, giving CTA |
+| `/about` | Church history and founding story, mission and vision, core values, leadership profiles |
+| `/ministries` | Ministry grid (worship, small groups, Bible study, community service, youth, counselling) |
+| `/sermons` | Sermon archive with search and category filters (Faith, Love, Purpose, Freedom) |
+| `/events` | Event cards with countdown timers and expandable details |
+| `/giving` | Donation form — category, preset amounts ($10–$500) or a custom amount, summary, Paystack checkout |
+| `/contact` | Phone, email, address, message form with type selection, embedded map, prayer request |
+| `/admin` | Password-protected dashboard: CRUD tabs for sermons, events, ministries and testimonials |
+| `/books`, `/blog` | Placeholder pages for the resources and devotionals still to come |
 
-### Ministries Page
+## Design system
 
-- Grid of ministry descriptions (Worship, Small Groups, Bible Study, Community Service, Youth, Counseling)
-- Community section with imagery
+| Colour | Hex | Used for |
+| --- | --- | --- |
+| Dark navy | `#1a1a2e` | Primary backgrounds, headings |
+| Deep blue | `#16213e` | Secondary backgrounds |
+| Royal blue | `#0f3460` | Accent sections |
+| Accent coral | `#e94560` | CTAs, highlights, icons |
+| Light background | `#f8f9fa` | Section backgrounds |
+| Warm gold | `#d4a574` | Accent text |
+| Dark text | `#2d2d2d` | Body copy |
 
-### Sermons Page
+Headings are **Playfair Display**, body copy is **Inter**. Animations are Framer Motion: fade-in-up
+on scroll, staggered grids, page transitions, expanding event cards.
 
-- Sermon archive with search functionality
-- Category filtering (Faith, Love, Purpose, Freedom)
-- Speaker and date display
-
-### Events Page
-
-- Event cards with countdown timers
-- Expandable details with description and register button
-- Date, time, and location display
-
-### Giving Page
-
-- Category selection (General Fund, Missions, Community Outreach, Youth Ministry)
-- Preset donation amounts ($10 - $500)
-- Custom amount input
-- Donation summary
-
-### Contact Page
-
-- Contact information (phone, email, address)
-- Contact form with message type selection
-- Embedded Google Maps location
-- Prayer request section
-
-### Books Page
-
-- Placeholder page for future books & resources collection
-
-### Blog Page
-
-- Placeholder page for future blog posts and devotionals
-
-### Admin Dashboard
-
-- Password-protected login (demo: admin123)
-- Content management tabs (Sermons, Events, Ministries, Testimonials)
-- CRUD table with edit/delete actions
-- Add new content button
-
-## Design System
-
-### Color Palette
-
-| Color        | Hex       | Usage                         |
-| ------------ | --------- | ----------------------------- |
-| Dark Navy    | `#1a1a2e` | Primary backgrounds, headings |
-| Deep Blue    | `#16213e` | Secondary backgrounds         |
-| Royal Blue   | `#0f3460` | Accent sections               |
-| Accent Coral | `#e94560` | CTAs, highlights, icons       |
-| Light BG     | `#f8f9fa` | Section backgrounds           |
-| Warm Gold    | `#d4a574` | Accent text, highlights       |
-| Dark Text    | `#2d2d2d` | Body text                     |
-
-### Typography
-
-- **Headings:** Playfair Display (serif) - elegant, traditional feel
-- **Body:** Inter (sans-serif) - clean, modern readability
-
-## Getting Started
+## Getting started
 
 ### Prerequisites
 
-- Node.js 18+
-- npm or yarn
+- Node 20.19+ (24.x recommended) and npm.
+- A Supabase project, for the backend only. The frontend runs without one.
 
-### Installation
+### Frontend
 
 ```bash
 cd app/frontend
-npm install
+npm ci
+npm run dev        # http://localhost:5173
 ```
 
-### Development
+| Script | What it does |
+| --- | --- |
+| `npm run dev` | Vite dev server with HMR |
+| `npm run build` | `tsc -b && vite build` → `dist/` |
+| `npm run preview` | Serve the built `dist/` locally |
+| `npm run lint` | ESLint |
+
+`app/frontend/src/lib/api.ts` picks its base URL from the build mode: `http://localhost:3001/api`
+in development, `https://jethro.onrender.com/api` in production. Oversight the frontend makes:
+the `@/` alias points at `src/`; images live in `src/assets/` and `public/images/`.
+
+### Backend
 
 ```bash
-npm run dev
+cd app/backend
+npm ci
+npm run dev        # tsx watch src/index.ts → http://localhost:3001
 ```
 
-Open [http://localhost:5173](http://localhost:5173) to view the site in your browser.
+Create `app/backend/.env`:
 
-### Build
-
-```bash
-npm run build
+```dotenv
+SUPABASE_URL=https://<project>.supabase.co
+SUPABASE_SERVICE_KEY=<service-role-key>
+PORT=3001          # optional; defaults to 3001
 ```
 
-### Preview Production Build
+`src/config/supabase.ts` throws on startup if either Supabase variable is missing, so the process
+fails loudly rather than serving 500s later. `SUPABASE_SERVICE_KEY` is the service-role key: it
+bypasses row-level security, so it belongs in the server environment only — never in the frontend.
 
-```bash
-npm run preview
-```
+| Script | What it does |
+| --- | --- |
+| `npm run dev` | `tsx watch src/index.ts` |
+| `npm run build` | `tsc` → `dist/` |
+| `npm start` | `node dist/index.js` |
 
-## Navigation
+Endpoints: `/api/events`, `/api/sermons`, `/api/books`, `/api/blog`, `/api/payments`,
+`/api/upload`, `/api/health`, and `/` (name and version).
 
-The site navigation includes:
+## Environment variables
 
-- Home, About, Ministries, Sermons, Events, Books, Blog, Giving
+| Package | Variable | Purpose |
+| --- | --- | --- |
+| frontend | `VITE_PAYSTACK_PUBLIC_KEY` | Paystack public key for the giving form. Publishable by design — it is inlined into the bundle — but it should still come from the environment, not the file |
+| backend | `SUPABASE_URL` | Supabase project URL |
+| backend | `SUPABASE_SERVICE_KEY` | Service-role key (**server-only secret**) |
+| backend | `PORT` | Optional API port, default 3001 |
 
-Mobile navigation is handled via a hamburger menu with the same links.
+## Deploy
 
-## Animations
+- **Frontend → Vercel.** `vercel.json` at the repo root rewrites every path to `/index.html`, which
+  a client-side-routed SPA needs so deep links and refreshes do not 404.
+- **Backend → Render.** A separate web service: build `npm ci && npm run build`, start
+  `npm start`, with `SUPABASE_URL` and `SUPABASE_SERVICE_KEY` set in the service environment.
+- The production API host is compiled into the frontend (`https://jethro.onrender.com/api` in
+  `src/lib/api.ts`), so **a change of backend host is a frontend change and a redeploy**, at least
+  until that URL moves into an environment variable.
 
-The site uses Framer Motion for:
+## Continuous integration
 
-- Fade-in-up animations on scroll
-- Staggered children animations for grids
-- Page load transitions
-- Expandable event card details
+`.github/workflows/ci.yml` runs on every push to `main`, every PR, and on demand: frontend
+(`npm ci` → ESLint → `tsc -b && vite build`) and backend (`npm ci` → `npm run build`, whose `tsc`
+gate is the compiler itself). Node 24, concurrency-guarded, npm cache keyed per package.
 
-## Notes
+## Known gaps
 
-- The `@/` path alias points to the `src/` directory
-- Images are stored in `src/assets/` and `public/images/`
-- The backend directory (`app/backend/`) is reserved for future API development
+- `/blog` and `/books` are placeholder pages; the API routes behind them already exist.
+- The admin dashboard's login is a hard-coded demo password (`admin123`) — it is not a real auth
+  boundary and must not be treated as one.
+- Giving posts to `/api/payments`; treat the Paystack flow as test-mode until it has been run
+  end to end with live keys.
+- No automated tests yet (the backend's `npm test` is still the npm placeholder).
+- `app/frontend/README.md` is the unedited Vite template — this file is the one to read.
